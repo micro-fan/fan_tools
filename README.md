@@ -1,5 +1,7 @@
 # About this package
 
+[![Build Status](https://travis-ci.org/tipsi/tipsi_tools.svg?branch=master)](https://travis-ci.org/tipsi/tipsi_tools)
+
 Here are set of internal tools that are shared between different projects internally. Originally most tools related to testing, so they provide some base classes for various cases in testing
 
 **NOTE: all our tools are intentially support only 3.5+ python.**
