@@ -85,6 +85,58 @@ Basic unix helpers
 * wait_socket - wait for socket awailable (eg. you can wait for postgresql with `wait_socket('localhost', 5432)`
 
 
+## tipsi_tools.logging.JSFormatter
+
+Enable json output with additional fields, suitable for structured logging into ELK or similar solutions.
+
+Accepts `env_vars` key with environmental keys that should be included into log.
+
+```python
+# this example uses safe_logger as handler (pip install safe_logger)
+import logging
+import logging.config
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'json': {
+            '()': 'tipsi_tools.logging.JSFormatter',
+            'env_vars': ['HOME'],
+        },
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        },
+    },
+    'handlers': {
+        'default': {
+            'level': 'DEBUG',
+            'class': 'safe_logger.TimedRotatingFileHandlerSafe',
+            'filename': 'test_json.log',
+            'when': 'midnight',
+            'interval': 1,
+            'backupCount': 30,
+            'formatter': 'json',
+            },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['default'],
+            'level': 'DEBUG',
+        },
+    },
+}
+
+logging.config.dictConfig(LOGGING)
+log = logging.getLogger('TestLogger')
+
+log.debug('test debug')
+log.info('test info')
+log.warn('test warn')
+log.error('test error')
+```
+
 ## Commands
 
 ### tipsi_env_yaml
