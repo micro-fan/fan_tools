@@ -77,6 +77,14 @@ class ExampleCase(AIOTestCase):
         await self.assertRaises(ZeroDivisionError, self.async_division)
 ```
 
+## tipsi_tools.unix helpers
+
+Basic unix helpers
+
+* run - run command in shell
+* wait_socket - wait for socket awailable (eg. you can wait for postgresql with `wait_socket('localhost', 5432)`
+
+
 ## Commands
 
 ### tipsi_env_yaml
