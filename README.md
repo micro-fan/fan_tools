@@ -76,3 +76,11 @@ class ExampleCase(AIOTestCase):
     async test_example(self):
         await self.assertRaises(ZeroDivisionError, self.async_division)
 ```
+
+## Commands
+
+### tipsi_env_yaml
+
+Convert template yaml with substituion of `%{ENV_NAME}` strings to appropriate environment variables.
+
+Usage: `tipsi_env_yaml src_file dst_file`
