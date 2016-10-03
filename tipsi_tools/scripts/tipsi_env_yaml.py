@@ -1,6 +1,7 @@
 import argparse
 import os
 import re
+import sys
 import yaml
 
 
@@ -16,7 +17,11 @@ D = os.path.dirname(__file__)
 
 def env(s):
     for k in R.findall(s):
-        s = s.replace(P(k), os.environ.get(k))
+        try:
+            s = s.replace(P(k), os.environ.get(k))
+        except TypeError as e:
+            print('Cannot find env variable: {}'.format(k), file=sys.stderr)
+            raise e
     return s
 
 
