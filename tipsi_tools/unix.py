@@ -23,6 +23,17 @@ def run(command):
     return (out.returncode, _prepare(out.stdout), _prepare(out.stderr))
 
 
+def succ(cmd, check_stderr=True):
+    '''
+    Alias to run with check return code and stderr
+    '''
+    code, out, err = run(cmd)
+    assert code == 0, 'Return: {} {}'.format(code, cmd)
+    if check_stderr:
+        assert err == [], 'Error: {} {}'.format(err, code)
+    return code, out, err
+
+
 def wait_socket(host, port, timeout=120):
     '''
     Wait for socket opened on remote side. Return False after timeout
