@@ -138,6 +138,39 @@ log.warn('test warn')
 log.error('test error')
 ```
 
+## tipsi_tools.drf.serializers.EnumSerializer
+
+Allow you to deserealize incoming strings into `Enum` values.
+You should add `EnumSerializer` into your serializers by hand.
+
+```python
+from enum import IntEnum
+
+from django.db import models
+from rest_framework import serializers
+
+from tipsi_tools.drf.serializers import EnumSerializer
+
+
+class MyEnum(IntEnum):
+  one = 1
+  two = 2
+
+class ExampleModel(models.Model):
+  value = models.IntegerField(choices=[(x.name, x.value) for x in MyEnum])
+
+class ExampleSerializer(serializers.ModelSerializer):
+  value = EnumSerializer(MyEnum)
+
+# this allows you to post value as: {'value': 'one'}
+```
+
+Due to `Enum` and `IntegerField` realizations you may use `Enum.value` in querysets
+
+```python
+ExampleModel.objects.filter(value=MyEnum.two)
+```
+
 ## Commands
 
 ### tipsi_env_yaml
