@@ -28,7 +28,7 @@ def succ(cmd, check_stderr=True):
     Alias to run with check return code and stderr
     '''
     code, out, err = run(cmd)
-    assert code == 0, 'Return: {} {}'.format(code, cmd)
+    assert code == 0, 'Return: {} {}\nStderr: {}'.format(code, cmd, err)
     if check_stderr:
         assert err == [], 'Error: {} {}'.format(err, code)
     return code, out, err
