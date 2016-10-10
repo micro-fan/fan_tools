@@ -1,7 +1,9 @@
+import os
 import socket
 import subprocess
 import time
 from contextlib import closing
+from collections import ChainMap
 
 
 def _prepare(out):
@@ -50,3 +52,11 @@ def wait_socket(host, port, timeout=120):
             count += 1
             if count > timeout:
                 return False
+
+
+def interpolate_sysenv(line, defaults={}):
+    '''
+    Format line system environment variables + defaults
+    '''
+    map = ChainMap(os.environ, defaults)
+    return line.format(**map)

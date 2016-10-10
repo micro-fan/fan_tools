@@ -85,6 +85,21 @@ Basic unix helpers
 * succ - wrapper around `run` with return code and stderr check
 * wait_socket - wait for socket awailable (eg. you can wait for postgresql with `wait_socket('localhost', 5432)`
 
+#### interpolate_sysenv
+
+Format string with system variables + defaults.
+
+```python
+PG_DEFAULTS = {
+    'PGDATABASE': 'postgres',
+    'PGPORT': 5432,
+    'PGHOST': 'localhost',
+    'PGUSER': 'postgres',
+    'PGPASSWORD': '',
+    }
+DSN = interpolate_sysenv('postgresql://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGDATABASE}', PG_DEFAULTS)
+```
+
 
 ## tipsi_tools.logging.JSFormatter
 
