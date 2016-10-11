@@ -12,6 +12,8 @@ class EnumSerializer(fields.Field):
         self.enum = enum
 
     def to_internal_value(self, data):
+        if data is None:
+            return None
         try:
             return getattr(self.enum, data)
         except AttributeError:
