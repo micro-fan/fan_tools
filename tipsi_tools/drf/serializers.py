@@ -18,7 +18,7 @@ class EnumSerializer(fields.Field):
             return getattr(self.enum, data)
         except TypeError:
             try:
-                self.enum(data)
+                return self.enum(data)
             except ValueError:
                 values = [x.name for x in self.enum]
                 self.fail('invalid', value=data, values=values)
