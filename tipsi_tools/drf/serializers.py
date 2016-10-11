@@ -17,8 +17,11 @@ class EnumSerializer(fields.Field):
         try:
             return getattr(self.enum, data)
         except AttributeError:
-            values = [x.name for x in self.enum]
-            self.fail('invalid', value=data, values=values)
+            try:
+                self.enum(data)
+            except ValueError:
+                values = [x.name for x in self.enum]
+                self.fail('invalid', value=data, values=values)
 
     def to_representation(self, value):
         if isinstance(value, Enum):
