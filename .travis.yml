@@ -4,7 +4,8 @@ python:
   - '3.5'
 
 install:
-  - pip install nose2
+  - pip install nose2 django django-filter djangorestframework
 
 script:
   - nose2 tipsi_tools.tests
+  - python django_tests/manage.py test

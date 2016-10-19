@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import tests.django_sample.sampleapp.models
+import sampleapp.models
 
 
 class Migration(migrations.Migration):
@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('updated', models.DateTimeField(auto_now=True)),
                 ('content', models.TextField()),
-                ('type', models.IntegerField(default=tests.django_sample.sampleapp.models.ArticleType(1))),
+                ('type', models.IntegerField(default=sampleapp.models.ArticleType(1))),
             ],
         ),
         migrations.CreateModel(

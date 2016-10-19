@@ -4,7 +4,7 @@ from pprint import pprint
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from tests.django_sample.sampleapp.models import Author, Article
+from sampleapp.models import Author, Article
 
 
 class MainTest(TestCase):

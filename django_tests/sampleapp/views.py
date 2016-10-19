@@ -8,7 +8,7 @@ from tipsi_tools import drf
 from tipsi_tools.drf.filters import EnumFilter
 from tipsi_tools.drf.serializers import EnumSerializer
 
-from tests.django_sample.sampleapp.models import Article, ArticleType
+from sampleapp.models import Article, ArticleType
 
 
 class ArticleSerializer(serializers.ModelSerializer):
