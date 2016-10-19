@@ -3,9 +3,12 @@ language: python
 python:
   - '3.5'
 
+cache:
+  pip: true
+
 install:
   - pip install nose2 django django-filter djangorestframework
 
 script:
-  - nose2 tipsi_tools.tests
+  - nose2 tests
   - python django_tests/manage.py test
