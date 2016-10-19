@@ -20,13 +20,15 @@ class MainTest(TestCase):
         self.articles = []
 
         for i in range(5):
+            article_type = i % 3 + 1
             for author in [self.author1, self.author2]:
                 article = Article.objects.create(title='article {} by {}'.format(i, author.name),
                                                  content='article content {}'.format(i),
-                                                 author=author)
+                                                 author=author,
+                                                 type=article_type)
                 self.articles.append(article)
 
-    def test_get_article_with_extended_fields(self):
+    def test_get_articles_of_review_type(self):
         url = '/article/'.format(self.articles[0].id)
         query = 'type=review'
 
@@ -35,4 +37,17 @@ class MainTest(TestCase):
         assert response.status_code == 200, response.status_code
 
         response_json = response.json()
-        assert len(response_json) == 10, response_json
+        expected = len([a for a in response_json if a['type'] == 'review'])
+        assert len(response_json) == expected, response_json
+
+    def test_get_articles_of_ads_and_review_types(self):
+        url = '/article/'.format(self.articles[0].id)
+        query = 'type=ads,review'
+
+        response = self.client.get('{}?{}'.format(url, query))
+
+        assert response.status_code == 200, response.status_code
+
+        response_json = response.json()
+        assert len(response_json) == 6, response_json
+

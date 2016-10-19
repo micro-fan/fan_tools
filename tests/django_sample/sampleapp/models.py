@@ -1,5 +1,13 @@
+from enum import IntEnum
+
 from django.contrib.auth.models import User
 from django.db import models
+
+
+class ArticleType(IntEnum):
+    article = 1
+    review = 2
+    ads = 3
 
 
 class Author(models.Model):
@@ -13,6 +21,7 @@ class Article(models.Model):
     updated = models.DateTimeField(auto_now=True)
     content = models.TextField()
     author = models.ForeignKey(Author, related_name='articles')
+    type = models.IntegerField(default=ArticleType.article)
 
 
 class Review(models.Model):
