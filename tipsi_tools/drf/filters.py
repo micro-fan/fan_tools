@@ -23,8 +23,6 @@ class EnumFilter(django_filters.CharFilter):
                         q_objects.append(q)
                     elif n == 'null':
                         q_objects.append(Q(**{'{}__isnull'.format(self.name): True}))
-                    else:
-                        raise AttributeError
             elif name is None:
                 q_objects.append(Q(**{'{}__isnull'.format(self.name): True}))
             else:
@@ -32,7 +30,7 @@ class EnumFilter(django_filters.CharFilter):
             if q_objects:
                 return qs.filter(reduce(lambda q1, q2: q1 | q2, q_objects))
             else:
-                return
+                return qs
 
         except Exception:
             logging.exception('Failed to convert value: {} {}'.format(self.name, name))
