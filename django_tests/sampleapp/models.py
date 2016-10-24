@@ -21,7 +21,7 @@ class Article(models.Model):
     updated = models.DateTimeField(auto_now=True)
     content = models.TextField()
     author = models.ForeignKey(Author, related_name='articles')
-    type = models.IntegerField(default=ArticleType.article)
+    type = models.IntegerField(null=True, default=ArticleType.article)
 
 
 class Review(models.Model):

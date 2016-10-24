@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('updated', models.DateTimeField(auto_now=True)),
                 ('content', models.TextField()),
-                ('type', models.IntegerField(default=sampleapp.models.ArticleType(1))),
+                ('type', models.IntegerField(null=True, default=sampleapp.models.ArticleType(1))),
             ],
         ),
         migrations.CreateModel(

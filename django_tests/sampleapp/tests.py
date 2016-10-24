@@ -27,6 +27,7 @@ class MainTest(TestCase):
                                                  author=author,
                                                  type=article_type)
                 self.articles.append(article)
+        Article.objects.create(title='null article', content='null content', author=author, type=None)
 
     def test_get_articles_of_review_type(self):
         url = '/article/'.format(self.articles[0].id)
@@ -51,3 +52,12 @@ class MainTest(TestCase):
         response_json = response.json()
         assert len(response_json) == 6, response_json
 
+    def test_null(self):
+        url = '/article/'.format(self.articles[0].id)
+        query = 'type=null'
+        response = self.client.get('{}?{}'.format(url, query))
+
+        assert response.status_code == 200, response.status_code
+
+        response_json = response.json()
+        assert len(response_json) == 1, response_json
