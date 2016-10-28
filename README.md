@@ -186,6 +186,12 @@ Due to `Enum` and `IntegerField` realizations you may use `Enum.value` in querys
 ExampleModel.objects.filter(value=MyEnum.two)
 ```
 
+## tipsi_tools.django.log_requests.LoggerMiddleware
+
+LoggerMiddleware will log request meta + raw post data into log.
+
+For django<1.10 please use `tipsi_tools.django.log_requests.DeprecatedLoggerMiddleware`
+
 ## Commands
 
 ### tipsi_env_yaml

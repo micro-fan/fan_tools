@@ -51,6 +51,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'tipsi_tools.django.log_requests.DeprecatedLoggerMiddleware',
 ]
 
 ROOT_URLCONF = 'sampleproj.urls'

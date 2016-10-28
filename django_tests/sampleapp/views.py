@@ -1,10 +1,7 @@
 import django_filters
-from django.shortcuts import render
-from rest_framework import views, generics, status, serializers, viewsets
+from rest_framework import serializers, viewsets
 from rest_framework.filters import DjangoFilterBackend
 
-import tipsi_tools
-from tipsi_tools import drf
 from tipsi_tools.drf.filters import EnumFilter
 from tipsi_tools.drf.serializers import EnumSerializer
 
