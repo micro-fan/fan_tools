@@ -92,3 +92,11 @@ class ReviewTest(TestCase):
 
         response_json = response.json()
         assert len(response_json) == 10
+
+    def test_reviews_article_type(self):
+        response = self.client.get('/review/?article_type=ads')
+
+        assert response.status_code == 200, response.status_code
+
+        response_json = response.json()
+        assert len(response_json) == 5, len(response_json)

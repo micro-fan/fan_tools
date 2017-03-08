@@ -40,7 +40,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class ReviewFilter(django_filters.FilterSet):
-    article_type = EnumFilter(ArticleType)
+    article_type = EnumFilter(ArticleType, field_name='article__type')
 
     class Meta:
         model = Review
