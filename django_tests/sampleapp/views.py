@@ -5,7 +5,7 @@ from rest_framework.filters import DjangoFilterBackend
 from tipsi_tools.drf.filters import EnumFilter
 from tipsi_tools.drf.serializers import EnumSerializer
 
-from sampleapp.models import Article, ArticleType
+from sampleapp.models import Article, ArticleType, Review
 
 
 class ArticleSerializer(serializers.ModelSerializer):
@@ -29,3 +29,26 @@ class ArticleViewSet(viewsets.ModelViewSet):
     serializer_class = ArticleSerializer
     filter_backends = [DjangoFilterBackend]
     filter_class = ArticleFilter
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    article = ArticleSerializer()
+
+    class Meta:
+        model = Review
+        fields = ['id', 'summary', 'content', 'article']
+
+
+class ReviewFilter(django_filters.FilterSet):
+    article_type = EnumFilter(ArticleType)
+
+    class Meta:
+        model = Review
+        fields = ['article_type']
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    filter_backends = [DjangoFilterBackend]
+    filter_class = ReviewFilter

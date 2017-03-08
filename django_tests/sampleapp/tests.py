@@ -4,7 +4,7 @@ from pprint import pprint
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from sampleapp.models import Author, Article
+from sampleapp.models import Author, Article, Review, ArticleType
 
 
 class MainTest(TestCase):
@@ -61,3 +61,34 @@ class MainTest(TestCase):
 
         response_json = response.json()
         assert len(response_json) == 1, response_json
+
+
+class ReviewTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.author = Author.objects.create(name='author 1',
+                                            birth_date=date(1985, 1, 31))
+        self.article = Article.objects.create(title='article by {}'.format(self.author.name),
+                                              content='article content',
+                                              author=self.author,
+                                              type=ArticleType.article)
+        self.ads = Article.objects.create(title='ads by {}'.format(self.author.name),
+                                          content='ads content',
+                                          author=self.author,
+                                          type=ArticleType.ads)
+
+        self.reviews = []
+        for a in [self.article, self.ads]:
+            for i in range(5):
+                r = Review.objects.create(article=a, summary='summary', content='content', stars=5)
+                self.reviews.append(r)
+
+    def test_reviews(self):
+        url = '/review/'
+
+        response = self.client.get('{}?{}'.format(url, ''))
+
+        assert response.status_code == 200, response.status_code
+
+        response_json = response.json()
+        assert len(response_json) == 10
