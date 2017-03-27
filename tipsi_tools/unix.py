@@ -39,22 +39,38 @@ def succ(cmd, check_stderr=True):
     return code, out, err
 
 
-def wait_socket(host, port, timeout=120):
-    '''
-    Wait for socket opened on remote side. Return False after timeout
-    '''
+def check_socket(host, port):
+    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
+        try:
+            if sock.connect_ex((host, port)) == 0:
+                return True
+        except:
+            return False
+
+
+def wait_result(func, result, timeout):
     count = 0
     while True:
-        with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
-            try:
-                if sock.connect_ex((host, port)) == 0:
-                    return True
-            except:
-                pass
-            time.sleep(1)
-            count += 1
-            if count > timeout:
-                return False
+        res = func()
+        if result is None and res is None:
+            return True
+        elif res == result:
+            return True
+        time.sleep(1)
+        count += 1
+        if count > timeout:
+            return False
+
+
+def wait_socket(host, port, timeout=120):
+     '''
+     Wait for socket opened on remote side. Return False after timeout
+     '''
+    return wait_result(lambda: check_socket(host, port), True, timeout)
+
+
+def wait_no_socket(host, port, timeout=120):
+    return wait_result(lambda: check_socket(host, port), False, timeout)
 
 
 def interpolate_sysenv(line, defaults={}):
