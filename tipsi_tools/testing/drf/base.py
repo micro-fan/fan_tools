@@ -138,27 +138,10 @@ class BaseTest(TestCase, metaclass=PropsMeta):
         assert not r.content, r.content
 
     @contextmanager
-    def client(self, client_name, default=None):
+    def set_client(self, client_name):
         old_client = self.default_client
-        if default is not None and client_name is None:
-            self.default_client = default
-        else:
-            self.default_client = client_name
-
         try:
-            yield
-        finally:
-            self.default_client = old_client
-
-    @contextmanager
-    def cclient(self, client_name, default=None):
-        old_client = self.default_client
-        if default is not None and client_name is None:
-            self.default_client = default
-        else:
             self.default_client = client_name
-
-        try:
             yield
         finally:
             self.default_client = old_client
