@@ -63,9 +63,9 @@ def wait_result(func, result, timeout):
 
 
 def wait_socket(host, port, timeout=120):
-     '''
-     Wait for socket opened on remote side. Return False after timeout
-     '''
+    '''
+    Wait for socket opened on remote side. Return False after timeout
+    '''
     return wait_result(lambda: check_socket(host, port), True, timeout)
 
 
