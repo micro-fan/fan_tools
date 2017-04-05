@@ -82,7 +82,10 @@ class BaseTest(TestCase, metaclass=PropsMeta):
 
     def _method(self, method, url, data, client):
         if not client:
-            client = getattr(self, self.default_client)
+            if isinstance(self.default_client, User):
+                client = self.default_client
+            else:
+                client = getattr(self, self.default_client)
         if isinstance(client, User):
             client = client.client
         return getattr(client, method)(url, data, format=self.content_format)
@@ -138,10 +141,14 @@ class BaseTest(TestCase, metaclass=PropsMeta):
         assert not r.content, r.content
 
     @contextmanager
-    def set_client(self, client_name):
+    def set_client(self, client):
+        '''
+        temporary change default client for REST queries
+        you can use string name or User instance as a client
+        '''
         old_client = self.default_client
         try:
-            self.default_client = client_name
+            self.default_client = client
             yield
         finally:
             self.default_client = old_client
