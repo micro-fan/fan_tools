@@ -194,8 +194,22 @@ For django<1.10 please use `tipsi_tools.django.log_requests.DeprecatedLoggerMidd
 
 ## Commands
 
-### tipsi_env_yaml
+### tipsi_env_yaml.py
 
 Convert template yaml with substituion of `%{ENV_NAME}` strings to appropriate environment variables.
 
 Usage: `tipsi_env_yaml src_file dst_file`
+
+
+### tipsi_ci_script.py
+
+Helper to run default CI pipeline. Defaults are set up for [giltab defaults](https://docs.gitlab.com/ee/ci/variables/#predefined-variables-environment-variables). Includes stages:
+
+* build docker image with temporary name (commit sha by default)
+* run tests (optional)
+* push branch (by default only for master and staging branches)
+* push tag, if there are tags
+* cache image with common name
+* delete image with temporary name
+
+It's optimized for parallel launches, so you need to use unique temporary name (`--temp-name`). We want keep our system clean if possible, so we'll delete this tag in the end. But we don't want to repeat basic steps over and over, so we will cache image with common cache name (`--cache-name`), it will remove previous cached image.
