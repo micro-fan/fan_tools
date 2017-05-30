@@ -194,14 +194,14 @@ For django<1.10 please use `tipsi_tools.django.log_requests.DeprecatedLoggerMidd
 
 ## Commands
 
-### tipsi_env_yaml.py
+### tipsi_env_yaml
 
 Convert template yaml with substituion of `%{ENV_NAME}` strings to appropriate environment variables.
 
 Usage: `tipsi_env_yaml src_file dst_file`
 
 
-### tipsi_ci_script.py
+### tipsi_ci_script
 
 Helper to run default CI pipeline. Defaults are set up for [giltab defaults](https://docs.gitlab.com/ee/ci/variables/#predefined-variables-environment-variables). Includes stages:
 
