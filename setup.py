@@ -16,6 +16,7 @@ setup(
     entry_points={
         'console_scripts': [
             'tipsi_env_yaml=tipsi_tools.scripts.tipsi_env_yaml:main',
+            'tipsi_ci_script=tipsi_tools.scripts.tipsi_ci_script:main',
         ]
     },
     classifiers=[
