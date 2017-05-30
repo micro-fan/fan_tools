@@ -2,6 +2,7 @@ import os
 import socket
 import subprocess
 import time
+import re
 from contextlib import closing
 from collections import ChainMap
 
@@ -79,3 +80,15 @@ def interpolate_sysenv(line, defaults={}):
     '''
     map = ChainMap(os.environ, defaults)
     return line.format(**map)
+
+
+def source(fname):
+    '''
+    Act's similar to bash 'source' or '.' commands.
+    '''
+    rex = re.compile('(?:export |declare -x )?(.*?)="(.*?)"')
+    out = call_out('source {} && export'.format(fname))
+    out = [x for x in out if 'export' in x or 'declare' in x]
+    out = {k:v for k, v in [rex.match(x).groups() for x in out if rex.match(x)]}
+    for k, v in out.items():
+        os.environ[k] = v
