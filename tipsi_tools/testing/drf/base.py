@@ -28,7 +28,8 @@ class BaseTest(TestCase, metaclass=PropsMeta):
     def is_empty(self, name):
         return not hasattr(self, name)
 
-    def create_user(self, username, groups=[], permissions=[]):
+    @classmethod
+    def create_user(cls, username, groups=(), permissions=()):
         pwd = username
         exists = User.objects.filter(username=username).first()
         if exists:
