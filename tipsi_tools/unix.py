@@ -42,15 +42,18 @@ def succ(cmd, check_stderr=True):
 
 def check_socket(host, port):
     with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
+        sock.settimeout(10)
         try:
-            if sock.connect_ex((host, port)) == 0:
+            conn_ex = sock.connect_ex((host, port))
+            if conn_ex == 0:
                 return True
+            return False
         except:
             return False
 
 
 def wait_result(func, result, timeout):
-    count = 0
+    t = time.time()
     while True:
         res = func()
         if result is None and res is None:
@@ -58,8 +61,7 @@ def wait_result(func, result, timeout):
         elif res == result:
             return True
         time.sleep(1)
-        count += 1
-        if count > timeout:
+        if (time.time() - t) > timeout:
             return False
 
 

@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='tipsi_tools',
     packages=find_packages(),
-    version='1.0.0',
+    version='1.1.0',
     description='Various python stuff: testing, aio helpers, etc',
     author='cybergrind',
     author_email='cybergrind@gmail.com',
@@ -17,6 +17,7 @@ setup(
         'console_scripts': [
             'tipsi_env_yaml=tipsi_tools.scripts.tipsi_env_yaml:main',
             'tipsi_ci_script=tipsi_tools.scripts.tipsi_ci_script:main',
+            'tipsi_wait=tipsi_tools.scripts.tipsi_tools_wait:main',
         ]
     },
     classifiers=[

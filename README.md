@@ -213,3 +213,15 @@ Helper to run default CI pipeline. Defaults are set up for [giltab defaults](htt
 * delete image with temporary name
 
 It's optimized for parallel launches, so you need to use unique temporary name (`--temp-name`). We want keep our system clean if possible, so we'll delete this tag in the end. But we don't want to repeat basic steps over and over, so we will cache image with common cache name (`--cache-name`), it will remove previous cached image.
+
+### tipsi_wait
+
+Wait for socket awailable/not-awailable with timeout.
+
+```
+# Wait until database port up for 180 seconds
+tipsi_wait -t 180 postgres 5432
+
+# Wait until nginx port down for 30 seconds
+tipsi_wait -t 30 nginx 80
+```
