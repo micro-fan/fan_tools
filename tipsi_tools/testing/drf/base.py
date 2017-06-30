@@ -9,6 +9,21 @@ from rest_framework.test import APIClient
 from tipsi_tools.testing.meta import PropsMeta
 
 
+def get_ids(data, path='id'):
+    if isinstance(data, list):
+        for item in data:
+            yield from get_ids(item, path)
+    elif isinstance(data, dict):
+        part, *rest = path.split('.', 1)
+        if rest:
+            if part in data:
+                yield from get_ids(data.get(part), rest[0])
+        else:
+            yield data.get(part)
+    else:
+        yield None
+
+
 class BaseTest(TestCase, metaclass=PropsMeta):
     log = logging.getLogger('BaseTest')
     content_format = 'json'
@@ -24,6 +39,13 @@ class BaseTest(TestCase, metaclass=PropsMeta):
             }
         }
     }
+
+    @classmethod
+    def setUpTestData(cls):
+        # Cache all methods decorated with class_prop
+        # before running any test from test case
+        for name in dir(cls):
+            getattr(cls, name)
 
     def is_empty(self, name):
         return not hasattr(self, name)
@@ -143,13 +165,49 @@ class BaseTest(TestCase, metaclass=PropsMeta):
 
     @contextmanager
     def set_client(self, client):
-        '''
+        """
         temporary change default client for REST queries
         you can use string name or User instance as a client
-        '''
+        """
         old_client = self.default_client
         try:
             self.default_client = client
             yield
         finally:
             self.default_client = old_client
+
+    def assert_items(self, expected, data, path='id'):
+        """
+        Extract item from `data` by `path` and compare with `expected` items
+        :param expected: List of expected items.
+        :param data: Tested data
+        :param path: Path to the item
+        Usage:
+        >>> self.assert_items((1, 3, 5, 8), [
+        ...     {
+        ...         'name': 'bob',
+        ...         'wines': [
+        ...             {'name': 'wine1', 'attributes': [
+        ...                 {'color': 'red', 'id': 1},
+        ...                 {'color': 'green', 'id': 5},
+        ...             ]},
+        ...             {'name': 'wine2', 'attributes': [
+        ...                 {'color': 'red', 'id': 3},
+        ...             ]},
+        ...         ]
+        ...     },
+        ...     {
+        ...         'name': 'bob',
+        ...         'wines': [
+        ...             {'name': 'wine3', 'attributes': [
+        ...                 {'color': 'red', 'id': 8},
+        ...             ]},
+        ...         ]
+        ...     }
+        ... ], 'wines.attributes.id')
+        """
+        actual = list(get_ids(data, path))
+        assert len(expected) == len(actual), ('Expected and actual data length is not equal:\n'
+                                              'len({!r}) != len({!r})'.format(expected, actual))
+        assert set(expected) == set(actual), ('Expected ids are not equal to actual ids:\n'
+                                              '{!r} != {!r}'.format(set(expected), set(actual)))
