@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='tipsi_tools',
     packages=find_packages(),
-    version='1.2.0',
+    version='1.3.0',
     description='Various python stuff: testing, aio helpers, etc',
     author='cybergrind',
     author_email='cybergrind@gmail.com',
@@ -12,6 +12,9 @@ setup(
     install_requires=[
         'pyyaml>=3.12',
         'python-json-logger==0.1.5',
+    ],
+    tests_require=[
+        'pytest==3.1.3',
     ],
     entry_points={
         'console_scripts': [

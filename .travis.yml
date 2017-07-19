@@ -8,8 +8,7 @@ cache:
   pip: true
 
 install:
-  - pip install nose2 django django-filter djangorestframework
+  - pip install tox-travis
 
 script:
-  - nose2 tests
-  - python django_tests/manage.py test
+  - tox

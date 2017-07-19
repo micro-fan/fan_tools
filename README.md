@@ -192,6 +192,14 @@ LoggerMiddleware will log request meta + raw post data into log.
 
 For django<1.10 please use `tipsi_tools.django.log_requests.DeprecatedLoggerMiddleware`
 
+
+## tipsi_tools.python.execfile
+
+Backport of python's 2 `execfile` function.
+
+Usage: execfile('path/to/file.py', globals(), locals())
+Returns: True if file exists and executed, False if file doesn't exist
+
 ## Commands
 
 ### tipsi_env_yaml
