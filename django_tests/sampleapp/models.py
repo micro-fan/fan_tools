@@ -1,6 +1,6 @@
 from enum import IntEnum
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 
 
@@ -28,5 +28,5 @@ class Review(models.Model):
     summary = models.CharField(max_length=255)
     content = models.TextField()
     stars = models.IntegerField()
-    user = models.ForeignKey(User, null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
     article = models.ForeignKey(Article, related_name='reviews')

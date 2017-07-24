@@ -1,8 +1,9 @@
 import logging
 from contextlib import contextmanager
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
-from django.contrib.auth.models import User, Permission, Group
+from django.contrib.auth.models import Permission, Group
 from django.contrib.contenttypes.models import ContentType
 from rest_framework.test import APIClient
 
@@ -53,6 +54,7 @@ class BaseTest(TestCase, metaclass=PropsMeta):
     @classmethod
     def create_user(cls, username, groups=(), permissions=()):
         pwd = username
+        User = get_user_model()
         exists = User.objects.filter(username=username).first()
         if exists:
             user = exists
@@ -91,6 +93,7 @@ class BaseTest(TestCase, metaclass=PropsMeta):
         return APIClient()
 
     def prop__superuser(self):
+        User = get_user_model()
         exists = User.objects.filter(username='su').first()
         if exists:
             return exists
@@ -104,6 +107,7 @@ class BaseTest(TestCase, metaclass=PropsMeta):
         return self.superuser
 
     def _method(self, method, url, data, client):
+        User = get_user_model()
         if not client:
             if isinstance(self.default_client, User):
                 client = self.default_client
