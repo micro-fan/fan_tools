@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='tipsi_tools',
     packages=find_packages(),
-    version='1.4.0',
+    version='1.5.0',
     description='Various python stuff: testing, aio helpers, etc',
     author='cybergrind',
     author_email='cybergrind@gmail.com',
