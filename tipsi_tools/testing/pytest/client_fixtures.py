@@ -3,11 +3,6 @@ import os
 from contextlib import contextmanager
 from pprint import pformat
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission, Group
-from django.contrib.contenttypes.models import ContentType
-from rest_framework.test import APIClient
-
 from tipsi_tools.python import rel_path
 
 
@@ -108,9 +103,10 @@ class UserWrapper:
     """
     Wraps User object, add requests support
     """
-    content_format = 'json' # or multipart
+    content_format = 'json'  # or multipart
 
     def __init__(self, user=None):
+        from rest_framework.test import APIClient
         self.user = user
         self.client = APIClient()
         self.client.force_authenticate(self.user)
@@ -188,6 +184,9 @@ class UserWrapper:
 
 
 def create_user(username, groups=(), permissions=(), **kwargs):
+    from django.contrib.auth import get_user_model
+    from django.contrib.auth.models import Permission, Group
+    from django.contrib.contenttypes.models import ContentType
     User = get_user_model()
     exists = User.objects.filter(username=username).first()
     if exists:

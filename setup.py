@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name='tipsi_tools',
-    packages=find_packages(),
-    version='1.5.0',
+    packages=find_packages(exclude=('tests', 'django_tests.*', 'django_tests')),
+    version='1.6.0',
     description='Various python stuff: testing, aio helpers, etc',
     author='cybergrind',
     author_email='cybergrind@gmail.com',
@@ -21,7 +21,8 @@ setup(
             'tipsi_env_yaml=tipsi_tools.scripts.tipsi_env_yaml:main',
             'tipsi_ci_script=tipsi_tools.scripts.tipsi_ci_script:main',
             'tipsi_wait=tipsi_tools.scripts.tipsi_tools_wait:main',
-        ]
+        ],
+        'pytest11': ['pytest_tipsi = tipsi_tools.testing.pytest.plugin'],
     },
     classifiers=[
         'Development Status :: 4 - Beta',
