@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='tipsi_tools',
     packages=find_packages(exclude=('tests', 'django_tests.*', 'django_tests')),
-    version='1.6.0',
+    version='1.6.1',
     description='Various python stuff: testing, aio helpers, etc',
     author='cybergrind',
     author_email='cybergrind@gmail.com',
@@ -11,7 +11,7 @@ setup(
     keywords=['testing', 'asyncio'],
     install_requires=[
         'pyyaml>=3.12',
-        'python-json-logger==0.1.5',
+        'python-json-logger>=0.1.5',
     ],
     tests_require=[
         'pytest==3.1.3',
