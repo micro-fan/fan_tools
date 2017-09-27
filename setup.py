@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
     name='tipsi_tools',
@@ -22,7 +22,6 @@ setup(
             'tipsi_ci_script=tipsi_tools.scripts.tipsi_ci_script:main',
             'tipsi_wait=tipsi_tools.scripts.tipsi_tools_wait:main',
         ],
-        'pytest11': ['pytest_tipsi = tipsi_tools.testing.pytest.plugin'],
     },
     classifiers=[
         'Development Status :: 4 - Beta',
