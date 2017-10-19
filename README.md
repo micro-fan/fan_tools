@@ -233,3 +233,13 @@ tipsi_wait -t 180 postgres 5432
 # Wait until nginx port down for 30 seconds
 tipsi_wait -t 30 nginx 80
 ```
+
+### run_filebeat
+
+* checks environmental variables `-e KEY=VALUE -e KEY2=VALUE2`
+* converts yaml template `tipsi_env_yaml {TEMPLATE} /tmp/filebeat.yml`
+* run `/usr/bin/filebeat /tmp/filebeat.yml`
+
+```
+run_filebeat -e CHECKME=VALUE path_to_template
+```

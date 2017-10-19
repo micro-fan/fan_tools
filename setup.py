@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 setup(
     name='tipsi_tools',
     packages=find_packages(exclude=('tests', 'django_tests.*', 'django_tests')),
-    version='1.7.0',
+    version='1.8.0',
     description='Various python stuff: testing, aio helpers, etc',
     author='cybergrind',
     author_email='cybergrind@gmail.com',
@@ -21,6 +21,7 @@ setup(
             'tipsi_env_yaml=tipsi_tools.scripts.tipsi_env_yaml:main',
             'tipsi_ci_script=tipsi_tools.scripts.tipsi_ci_script:main',
             'tipsi_wait=tipsi_tools.scripts.tipsi_tools_wait:main',
+            'run_filebeat=tipsi_tools.scripts.run_filebeat:main',
         ],
     },
     classifiers=[
