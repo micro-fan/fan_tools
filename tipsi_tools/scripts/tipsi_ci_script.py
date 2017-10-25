@@ -33,7 +33,7 @@ def build():
 
 
 def run_test():
-    succ([args.test])
+    succ([args.test], check_stderr=False)
 
 
 def push_branch():

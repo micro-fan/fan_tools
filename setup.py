@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 setup(
     name='tipsi_tools',
     packages=find_packages(exclude=('tests', 'django_tests.*', 'django_tests')),
-    version='1.8.0',
+    version='1.8.1',
     description='Various python stuff: testing, aio helpers, etc',
     author='cybergrind',
     author_email='cybergrind@gmail.com',
