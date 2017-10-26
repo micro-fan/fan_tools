@@ -1,9 +1,16 @@
 from setuptools import find_packages, setup
 
+with open('tipsi_tools/__init__.py', 'r') as f:
+    for line in f:
+        if line.startswith('__version__'):
+            version = line.strip().split('=')[1].strip(' \'"')
+            break
+
+
 setup(
     name='tipsi_tools',
     packages=find_packages(exclude=('tests', 'django_tests.*', 'django_tests')),
-    version='1.8.1',
+    version=version,
     description='Various python stuff: testing, aio helpers, etc',
     author='cybergrind',
     author_email='cybergrind@gmail.com',
