@@ -1,4 +1,6 @@
+import pytest
 from tipsi_tools.testing.aio import AIOTestCase
+from tipsi_tools.unix import asucc
 
 
 class AsyncCase(AIOTestCase):
@@ -16,3 +18,11 @@ class AsyncCase(AIOTestCase):
 
     def tearDown(self):
         assert self.setup
+
+
+@pytest.mark.asyncio
+async def test_asucc():
+    ret, out, err = await asucc('echo 1; echo 2 >&2; echo 3 >&2; echo 4; sleep 1', check_stderr=False)
+    assert ret == 0
+    assert out == ['1', '4']
+    assert err == ['2', '3']

@@ -84,6 +84,7 @@ Basic unix helpers
 * run - run command in shell
 * succ - wrapper around `run` with return code and stderr check
 * wait_socket - wait for socket awailable (eg. you can wait for postgresql with `wait_socket('localhost', 5432)`
+* asucc - asynchronous version of `succ` for use with `await`. supports realtime logging
 
 #### interpolate_sysenv
 

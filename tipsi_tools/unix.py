@@ -1,10 +1,16 @@
+import asyncio
+import logging
 import os
+import re
 import socket
 import subprocess
 import time
-import re
+from asyncio.subprocess import PIPE
 from contextlib import closing
 from collections import ChainMap
+
+
+log = logging.getLogger('tipsi_tools.unix')
 
 
 def _prepare(out):
@@ -34,6 +40,42 @@ def succ(cmd, check_stderr=True):
     if code != 0:
         for l in out:
             print(l)
+    assert code == 0, 'Return: {} {}\nStderr: {}'.format(code, cmd, err)
+    if check_stderr:
+        assert err == [], 'Error: {} {}'.format(err, code)
+    return code, out, err
+
+
+
+async def process_pipe(out, pipe, proc, log_fun):
+    while True:
+        line = await pipe.readline()
+        line = line.decode('utf8').strip('\n')
+        if line:
+            out.append(line)
+            log_fun(line)
+        if not line and proc.returncode is not None:
+            return
+        await asyncio.sleep(0.0001)
+
+
+async def asucc(cmd, check_stderr=True, pid_future=None, with_log=True):
+    proc = await asyncio.create_subprocess_shell(cmd, stderr=PIPE, stdout=PIPE)
+    if pid_future and not pid_future.done():
+        pid_future.set_result(proc.pid)
+
+    out, err = [], []
+    if with_log:
+        log_warning = log.warning
+        log_debug = log.debug
+    else:
+        skip = lambda x: x
+        log_warning, log_debug = skip, skip
+
+    asyncio.ensure_future(process_pipe(err, proc.stderr, proc, log_warning))
+    asyncio.ensure_future(process_pipe(out, proc.stdout, proc, log_debug))
+
+    code = await proc.wait()
     assert code == 0, 'Return: {} {}\nStderr: {}'.format(code, cmd, err)
     if check_stderr:
         assert err == [], 'Error: {} {}'.format(err, code)
