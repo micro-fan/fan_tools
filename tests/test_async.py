@@ -26,3 +26,11 @@ async def test_asucc():
     assert ret == 0
     assert out == ['1', '4']
     assert err == ['2', '3']
+
+
+@pytest.mark.asyncio
+async def test_asucc_handle_error():
+    stderr = []
+    with pytest.raises(AssertionError):
+        await asucc('bash randomcommand', stderr=stderr)
+    assert stderr, 'Should have something: {}'.format(stderr)

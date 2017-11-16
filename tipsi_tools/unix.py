@@ -32,11 +32,19 @@ def run(command):
     return (out.returncode, _prepare(out.stdout), _prepare(out.stderr))
 
 
-def succ(cmd, check_stderr=True):
+def succ(cmd, check_stderr=True, stdout=None, stderr=None):
     '''
     Alias to run with check return code and stderr
     '''
     code, out, err = run(cmd)
+
+    # Because we're raising error, sometimes we want to process stdout/stderr after catching error
+    # so we're copying these outputs if required
+    if stdout is not None:
+        stdout[:] = out
+    if stderr is not None:
+        stderr[:] = err
+
     if code != 0:
         for l in out:
             print(l)
@@ -59,12 +67,15 @@ async def process_pipe(out, pipe, proc, log_fun):
         await asyncio.sleep(0.0001)
 
 
-async def asucc(cmd, check_stderr=True, pid_future=None, with_log=True):
+async def asucc(cmd, check_stderr=True, pid_future=None, with_log=True, stdout=[], stderr=[]):
     proc = await asyncio.create_subprocess_shell(cmd, stderr=PIPE, stdout=PIPE)
     if pid_future and not pid_future.done():
         pid_future.set_result(proc.pid)
 
-    out, err = [], []
+    # see succ comments for these values
+    out = stdout if stdout is not None else []
+    err = stderr if stderr is not None else []
+
     if with_log:
         log_warning = log.warning
         log_debug = log.debug
