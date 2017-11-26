@@ -194,6 +194,29 @@ LoggerMiddleware will log request meta + raw post data into log.
 For django<1.10 please use `tipsi_tools.django.log_requests.DeprecatedLoggerMiddleware`
 
 
+## tipsi_tools.drf.use_form
+
+Helps to use power of serializers for simple APIs checks.
+
+
+```python
+from rest_framework import serializers
+from rest_framework.decorators import api_view
+from tipsi_tools.drf import use_form
+
+
+class SimpleForm(serializers.Serializer):
+    test_int = serializers.IntegerField()
+    test_str = serializers.CharField()
+
+
+@api_view(['GET'])
+@use_form(SimpleForm)
+def my_api(data):
+    print(f'Data: {data["test_int"]} and {data["test_str"]}')
+```
+
+
 ## tipsi_tools.python.execfile
 
 Backport of python's 2 `execfile` function.
