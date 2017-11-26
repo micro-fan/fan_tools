@@ -1,6 +1,8 @@
 # About this package
 
 [![Build Status](https://travis-ci.org/tipsi/tipsi_tools.svg?branch=master)](https://travis-ci.org/tipsi/tipsi_tools)
+[![PyPi version](https://img.shields.io/pypi/v/tipsi_tools.svg)](https://pypi.python.org/pypi/tipsi_tools)
+
 
 Here are set of internal tools that are shared between different projects internally. Originally most tools related to testing, so they provide some base classes for various cases in testing
 
@@ -55,6 +57,8 @@ This is just simple example, complex tests can use more deep relations in tests.
 
 
 ## AIOTestCase
+
+**NOTE: we're highly suggest to use pytest alongside with existing async tests plugins**
 
 Base for asyncronous test cases, you can use it as drop-in replacement for pre-existent tests to be able:
 
@@ -222,6 +226,7 @@ def my_api(data):
 Backport of python's 2 `execfile` function.
 
 Usage: execfile('path/to/file.py', globals(), locals())
+
 Returns: True if file exists and executed, False if file doesn't exist
 
 ## Commands
