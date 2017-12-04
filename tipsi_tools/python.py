@@ -1,5 +1,6 @@
 import os
 import sys
+from decimal import Decimal, ROUND_HALF_UP
 
 
 def execfile(fname, _globals, _locals):
@@ -21,3 +22,7 @@ def rel_path(path, check=True, depth=1):
     if check and not os.path.exists(full):
         raise Exception('No such path: {!r}'.format(full))
     return full
+
+
+def usd_round(amount):
+    return amount.quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
