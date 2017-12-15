@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 from tipsi_tools.testing.aio import AIOTestCase
 from tipsi_tools.unix import asucc
@@ -34,3 +36,11 @@ async def test_asucc_handle_error():
     with pytest.raises(AssertionError):
         await asucc('bash randomcommand', stderr=stderr)
     assert stderr, 'Should have something: {}'.format(stderr)
+
+
+@pytest.mark.asyncio
+async def test_asucc_kill(event_loop):
+    asucc_wait = asyncio.ensure_future(asucc('sleep 10000', loop=event_loop))
+    await asyncio.sleep(0.01)
+    asucc_wait.cancel()
+    await asyncio.sleep(0.1)

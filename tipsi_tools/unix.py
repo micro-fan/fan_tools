@@ -67,8 +67,8 @@ async def process_pipe(out, pipe, proc, log_fun):
         await asyncio.sleep(0.0001)
 
 
-async def asucc(cmd, check_stderr=True, pid_future=None, with_log=True, stdout=[], stderr=[]):
-    proc = await asyncio.create_subprocess_shell(cmd, stderr=PIPE, stdout=PIPE)
+async def asucc(cmd, check_stderr=True, pid_future=None, with_log=True, stdout=[], stderr=[], loop=None):
+    proc = await asyncio.create_subprocess_shell(cmd, stderr=PIPE, stdout=PIPE, loop=loop)
     if pid_future and not pid_future.done():
         pid_future.set_result(proc.pid)
 
@@ -83,14 +83,20 @@ async def asucc(cmd, check_stderr=True, pid_future=None, with_log=True, stdout=[
         skip = lambda x: x
         log_warning, log_debug = skip, skip
 
-    asyncio.ensure_future(process_pipe(err, proc.stderr, proc, log_warning))
-    asyncio.ensure_future(process_pipe(out, proc.stdout, proc, log_debug))
+    asyncio.ensure_future(process_pipe(err, proc.stderr, proc, log_warning), loop=loop)
+    asyncio.ensure_future(process_pipe(out, proc.stdout, proc, log_debug), loop=loop)
 
     code = await proc.wait()
-    assert code == 0, 'Return: {} {}\nStderr: {}'.format(code, cmd, err)
-    if check_stderr:
-        assert err == [], 'Error: {} {}'.format(err, code)
-    return code, out, err
+    try:
+        assert code == 0, 'Return: {} {}\nStderr: {}'.format(code, cmd, err)
+        if check_stderr:
+            assert err == [], 'Error: {} {}'.format(err, code)
+        return code, out, err
+    except asyncio.CancelledError:
+        if not proc.returncode:
+            log.exception('Going to kill process: [{}] {}'.format(proc.pid, cmd))
+            proc.kill()
+        return proc.returncode, out, err
 
 
 def check_socket(host, port):
