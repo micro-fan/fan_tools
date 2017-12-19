@@ -9,8 +9,36 @@ Here are set of internal tools that are shared between different projects intern
 **NOTE: all our tools are intentially support only 3.5+ python.**
 Some might work with other versions, but we're going to be free from all these crutches to backport things like `async/await` to lower versions, so if it works - fine, if not - feel free to send PR, but it isn't going to be merged all times.
 
+## Testing helpers
 
-## PropsMeta
+### ApiUrls
+
+Defined in `tipsi_tools/testing/__init__.py`. Required for defining nested urls with formatting.
+
+You can use it in fixtures, like:
+
+
+```python
+@pytest.fixture(scope='session')
+def api(api_v_base):
+    yield ApiUrls('{}/'.format(api_v_base), {
+        'password_reset_request': 'password/request/code/',
+        'password_reset': 'password/reset/',
+        'user_review_list': 'user/{user_id}/review/',
+        'user_review': 'user/{user_id}/review/{review_id}/',
+        'wine_review': 'wine/{wine_id}/review/',
+        'drink_review': 'drink/{drink_id}/review/',
+    })
+
+
+def test_review_list(user, api):
+    resp = user.get_json(api.user_review_list(user_id=user1.id), {'page_size': 2})
+```
+
+
+
+
+### PropsMeta
 
 You can find source in `tipsi_tools/testing/meta.py`.
 
@@ -56,7 +84,7 @@ Here you just get and use `self.cursor`, but automatically you get connection an
 This is just simple example, complex tests can use more deep relations in tests. And this approach is way more easier and faster than complex `setUp` methods.
 
 
-## AIOTestCase
+### AIOTestCase
 
 **NOTE: we're highly suggest to use pytest alongside with existing async tests plugins**
 
