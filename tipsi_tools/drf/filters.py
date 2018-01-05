@@ -29,7 +29,7 @@ class EnumFilter(django_filters.CharFilter):
             else:
                 raise AttributeError
             if q_objects:
-                return qs.filter(reduce(lambda q1, q2: q1 | q2, q_objects))
+                return self.get_method(qs)(reduce(lambda q1, q2: q1 | q2, q_objects))
             else:
                 return qs
 
