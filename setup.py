@@ -20,6 +20,13 @@ setup(
         'pyyaml>=3.12',
         'python-json-logger>=0.1.5',
     ],
+    extras_require={
+        'doc_utils': [
+            'rest_framework_dyn_serializer>=1.3.*',
+            'docutils',
+            'djangorestframework==3.7.*',
+        ],
+    },
     tests_require=[
         'pytest==3.1.3',
     ],
@@ -29,6 +36,7 @@ setup(
             'tipsi_ci_script=tipsi_tools.scripts.tipsi_ci_script:main',
             'tipsi_wait=tipsi_tools.scripts.tipsi_tools_wait:main',
             'run_filebeat=tipsi_tools.scripts.run_filebeat:main',
+            'doc_serializer=tipsi_tools.doc_utils.tipsi_sphinx.dyn:main',
         ],
     },
     classifiers=[

@@ -257,6 +257,26 @@ Usage: execfile('path/to/file.py', globals(), locals())
 
 Returns: True if file exists and executed, False if file doesn't exist
 
+
+## tipsi_tools.doc_utils.tipsi_sphinx
+
+Sphinx extensions to generate documentation for django restframework serializers and examples for http requests.
+
+In order to use them specify dependency for package installation:
+```
+pip install tipsi_tools[doc_utils]
+```
+
+Usage:
+```
+# Add to Sphinx conf.py
+extensions = [
+    # ...
+    'tipsi_tools.doc_utils.tipsi_sphinx.dyn_serializer',
+    'tipsi_tools.doc_utils.tipsi_sphinx.http_log'
+]
+```
+
 ## Commands
 
 ### tipsi_env_yaml
@@ -299,4 +319,21 @@ tipsi_wait -t 30 nginx 80
 
 ```
 run_filebeat -e CHECKME=VALUE path_to_template
+```
+
+
+### doc_serializer
+
+* output rst with list of serializers
+* generates documentation artifacts for serializers
+
+```
+usage: doc_serializer [-h] [--rst] [--artifacts]
+
+Parse serializers sources
+
+optional arguments:
+  -h, --help   show this help message and exit
+  --rst        Output rst with serializers
+  --artifacts  Write serializers artifacts
 ```
