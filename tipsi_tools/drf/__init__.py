@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 
 
-def use_form(form_class, request=None):
+def use_form(form_class, request=None, **top_kwargs):
     """
     Validate request (query_params or request body with args from url) with serializer and pass
     validated data dict to the view function instead of request object.
@@ -17,7 +17,13 @@ def use_form(form_class, request=None):
         return form
 
     if request:
-        return validated_form(request).validated_data
+        kwargs = {}
+        if request.resolver_match:
+            kwargs = {**request.resolver_match.kwargs}
+        if top_kwargs:
+            kwargs = {**kwargs, **top_kwargs}
+
+        return validated_form(request, **kwargs).validated_data
 
     def wrap(func):
         def method_wrap(view, request, *args, **kwargs):
