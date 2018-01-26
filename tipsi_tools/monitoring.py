@@ -9,7 +9,7 @@ import logging
 log_mon = logging.getLogger('monitoring')
 
 
-def log_mon_value(name, value=0, **kwargs):
+def log_mon_value(name, value=1, **kwargs):
     """
     simplest monitoring function to be aggregated with sum
     """
