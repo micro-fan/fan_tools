@@ -1,6 +1,6 @@
 import django_filters
 from rest_framework import serializers, viewsets
-from rest_framework.filters import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 
 from tipsi_tools.drf.filters import EnumFilter
 from tipsi_tools.drf.serializers import EnumSerializer
