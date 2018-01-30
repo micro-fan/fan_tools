@@ -1,9 +1,13 @@
 from datetime import date
+from unittest import mock
 
+import pytest
+from django.db import transaction, connection, models
 from django.test import TestCase
 from rest_framework.test import APIClient
-
 from sampleapp.models import Author, Article, Review, ArticleType
+
+from tipsi_tools.django import call_once_on_commit
 
 
 class MainTest(TestCase):
@@ -99,3 +103,46 @@ class ReviewTest(TestCase):
 
         response_json = response.json()
         assert len(response_json) == 5, len(response_json)
+
+
+@pytest.fixture
+def author(db):
+    return Author.objects.create(name='author 1', birth_date=date(1985, 1, 31))
+
+
+@pytest.fixture
+def req_cache():
+    return {}
+
+
+@call_once_on_commit
+def _test_hook():
+    pass
+
+
+def author_hook(sender, instance, **kwargs):
+    _test_hook()
+
+
+@pytest.fixture
+def author_signal(author):
+    models.signals.post_save.connect(author_hook, sender=Author)
+    yield
+    models.signals.post_save.disconnect(author_hook, sender=Author)
+
+
+def test_once_on_commit(author, req_cache, author_signal):
+    with mock.patch(
+            'tipsi_tools.django._get_request_unique_cache', side_effect=lambda: req_cache):
+        with transaction.atomic():
+            author.birth_date = date(1986, 1, 31)
+            author.save()
+            author.birth_date = date(1986, 1, 31)
+            author.save()
+
+            fn_name = _test_hook.__name__
+            call_times = sum(fn_name in str(i[1]) for i in connection.run_on_commit)
+            expected_call_times = 1
+            assert call_times == expected_call_times
+
+        assert author.birth_date == date(1986, 1, 31)

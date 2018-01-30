@@ -226,6 +226,56 @@ LoggerMiddleware will log request meta + raw post data into log.
 For django<1.10 please use `tipsi_tools.django.log_requests.DeprecatedLoggerMiddleware`
 
 
+## tipsi_tools.django.request_uniq
+
+Decorator adds a unique for each uwsgi request dict as first function
+ argument.
+For tests mock `_get_request_unique_cache`
+
+
+## tipsi_tools.django.call_once_on_commit
+
+Make function called only once on transaction commit. Here is examples
+ where function `do_some_useful` will be called only once after
+ transaction has been committed.
+```python
+class SomeModel(models.Model):
+    name = IntegerField()
+
+@call_once_on_commit
+def do_some_useful():
+    pass
+
+
+def hook(sender, instance, **kwargs):
+    do_some_useful()
+
+models.signals.post_save.connect(hook, sender=SomeModel)
+
+with transaction.atomic():
+    some_model = SomeModel()
+    some_model.name = 'One'
+    some_model.save()
+    some_model.name = 'Two'
+    some_model.save()
+```
+
+For tests with nested transactions (commit actually most times is not
+ called) it is useful to override behaviour `call_once_on_commit`
+ when decorated function executed right in place where it is called.
+ To do so mock `on_commit` function. Example pytest fixture:
+```
+@pytest.fixture(scope='session', autouse=True)
+def immediate_on_commit():
+    def side_effect():
+        return lambda f: f()
+
+    with mock.patch('tipsi_tools.django.on_commit', side_effect=side_effect) as m:
+        yield m
+
+```
+
+
 ## tipsi_tools.drf.use_form
 
 Helps to use power of serializers for simple APIs checks.
