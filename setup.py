@@ -27,7 +27,7 @@ setup(
             'djangorestframework==3.7.*',
         ],
         'logging': [
-            'safe-logger>=1.2.0',
+            'safe-logger>=1.2.1',
             'python-json-logger==0.1.7',
         ]
     },
