@@ -51,11 +51,10 @@ def setup_logger(root_dir, base_name, enable_json=True):
         },
         'handlers': {
             'default': {
-                'level': 'INFO',
+                'level': 'DEBUG',
                 'class': 'safe_logger.TimedRotatingFileHandlerSafe',
                 'filename': os.path.join(root_dir, '{}.log'.format(base_name)),
                 'when': 'midnight',
-                'interval': 1,
                 'backupCount': 30,
                 'formatter': 'standard',
             },
@@ -74,6 +73,8 @@ def setup_logger(root_dir, base_name, enable_json=True):
             'level': 'DEBUG',
             'class': 'safe_logger.TimedRotatingFileHandlerSafe',
             'filename': os.path.join(root_dir, '{}_json.log'.format(base_name)),
+            'when': 'midnight',
+            'backupCount': 30,
         }
         LOGGING['loggers']['']['handlers'].append('json')
     logging.config.dictConfig(LOGGING)

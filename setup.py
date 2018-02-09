@@ -26,6 +26,10 @@ setup(
             'docutils',
             'djangorestframework==3.7.*',
         ],
+        'logging': [
+            'safe-logger>=1.2.0',
+            'python-json-logger==0.1.7',
+        ]
     },
     tests_require=[
         'pytest==3.1.3',
