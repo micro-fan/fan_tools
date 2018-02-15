@@ -6,7 +6,7 @@ import socket
 import subprocess
 import time
 from asyncio.subprocess import PIPE
-from contextlib import closing
+from contextlib import closing, contextmanager
 from collections import ChainMap
 
 
@@ -145,7 +145,7 @@ def interpolate_sysenv(line, defaults={}):
 
 def source(fname):
     '''
-    Act's similar to bash 'source' or '.' commands.
+    Acts similar to bash 'source' or '.' commands.
     '''
     rex = re.compile('(?:export |declare -x )?(.*?)="(.*?)"')
     out = call_out('source {} && export'.format(fname))
@@ -153,3 +153,17 @@ def source(fname):
     out = {k:v for k, v in [rex.match(x).groups() for x in out if rex.match(x)]}
     for k, v in out.items():
         os.environ[k] = v
+
+
+@contextmanager
+def cd(dir_name):
+    """
+    do something in other directory and return back after block ended
+    """
+    old_path = os.path.abspath('.')
+    os.chdir(dir_name)
+    try:
+        yield
+    except Exception:
+        os.chdir(old_path)
+        raise

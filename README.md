@@ -117,6 +117,8 @@ Basic unix helpers
 * succ - wrapper around `run` with return code and stderr check
 * wait_socket - wait for socket awailable (eg. you can wait for postgresql with `wait_socket('localhost', 5432)`
 * asucc - asynchronous version of `succ` for use with `await`. supports realtime logging
+* source - acts similar to bash 'source' or '.' commands.
+* cd - contextmanager to do something with temporarily changed directory
 
 #### interpolate_sysenv
 
