@@ -25,7 +25,7 @@ class JSFormatter(JsonFormatter):
         'threadName'
     ]
 
-    
+
     def __init__(self, *args, env_vars=[], **kwargs):
         super(JSFormatter, self).__init__(*args, **kwargs)
         self.default_keys = {k: v for k, v in list(os.environ.items()) if k in env_vars}
@@ -34,6 +34,30 @@ class JSFormatter(JsonFormatter):
     def process_log_record(self, rec):
         rec.update(self.default_keys)
         return rec
+
+
+def base_handler(filename, **params):
+    return {
+        'level': 'DEBUG',
+        'class': 'safe_logger.TimedRotatingFileHandlerSafe',
+        'when': 'midnight',
+        'backupCount': 30,
+        'formatter': 'standard',
+        'filename': filename,
+        **params,
+    }
+
+
+def get_plain_logname(root_dir, base_name, enable_json):
+    """
+    we nest all plain logs to prevent double log shipping
+    """
+    if enable_json:
+        nested_dir = os.path.join(root_dir, 'plain')
+        if os.path.exists(root_dir) and not os.path.exists(nested_dir):
+            os.mkdir(nested_dir)
+        root_dir = nested_dir
+    return os.path.join(root_dir, '{}.log'.format(base_name))
 
 
 def setup_logger(root_dir, base_name, enable_json=True):
@@ -50,14 +74,7 @@ def setup_logger(root_dir, base_name, enable_json=True):
             'standard': {'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'},
         },
         'handlers': {
-            'default': {
-                'level': 'DEBUG',
-                'class': 'safe_logger.TimedRotatingFileHandlerSafe',
-                'filename': os.path.join(root_dir, '{}.log'.format(base_name)),
-                'when': 'midnight',
-                'backupCount': 30,
-                'formatter': 'standard',
-            },
+            'default': base_handler(get_plain_logname(root_dir, base_name, enable_json)),
         },
         'loggers': {
             '': {
@@ -65,17 +82,13 @@ def setup_logger(root_dir, base_name, enable_json=True):
                 'level': 'DEBUG',
                 'propagate': True,
             },
+            'boto3': {'level': 'INFO', },
+            'botocore': {'level': 'INFO', },
+            'kazoo': {'level': 'INFO', },
+            'urllib3': {'level': 'INFO', }
         }
     }
     if enable_json:
-        LOGGING['handlers']['json'] = {
-            'formatter': 'json',
-            'level': 'DEBUG',
-            'class': 'safe_logger.TimedRotatingFileHandlerSafe',
-            'filename': os.path.join(root_dir, '{}_json.log'.format(base_name)),
-            'when': 'midnight',
-            'backupCount': 30,
-        }
+        LOGGING['handlers']['json'] = base_handler(os.path.join(root_dir, '{}_json.log'.format(base_name)))
         LOGGING['loggers']['']['handlers'].append('json')
     logging.config.dictConfig(LOGGING)
-
