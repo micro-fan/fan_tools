@@ -93,6 +93,7 @@ def setup_logger(base_name, root_dir=None, enable_json=True):
         }
     }
     if enable_json:
-        LOGGING['handlers']['json'] = base_handler(os.path.join(root_dir, '{}.json_log'.format(base_name)))
+        LOGGING['handlers']['json'] = base_handler(os.path.join(root_dir, '{}.json_log'.format(base_name)),
+                                                   formatter='json')
         LOGGING['loggers']['']['handlers'].append('json')
     logging.config.dictConfig(LOGGING)
