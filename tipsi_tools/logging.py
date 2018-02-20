@@ -48,7 +48,7 @@ def base_handler(filename, **params):
     }
 
 
-def get_plain_logname(root_dir, base_name, enable_json):
+def get_plain_logname(base_name, root_dir, enable_json):
     """
     we nest all plain logs to prevent double log shipping
     """
@@ -60,7 +60,11 @@ def get_plain_logname(root_dir, base_name, enable_json):
     return os.path.join(root_dir, '{}.log'.format(base_name))
 
 
-def setup_logger(root_dir, base_name, enable_json=True):
+def setup_logger(base_name, root_dir=None, enable_json=True):
+    if not root_dir:
+        root_dir = os.environ.get('LOG_DIR')
+    assert root_dir, 'You should pass root_dir parameter or set env LOG_DIR'
+
     JSON_FORMATTER = {
         '()': 'tipsi_tools.logging.JSFormatter',
         'env_vars': ['HOST_TYPE', 'TIPSI_CONFIG', 'TIPSI_BRANCH', 'CONTAINER_TYPE'],
@@ -74,7 +78,7 @@ def setup_logger(root_dir, base_name, enable_json=True):
             'standard': {'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'},
         },
         'handlers': {
-            'default': base_handler(get_plain_logname(root_dir, base_name, enable_json)),
+            'default': base_handler(get_plain_logname(base_name, root_dir, enable_json)),
         },
         'loggers': {
             '': {
