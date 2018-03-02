@@ -277,6 +277,19 @@ def immediate_on_commit():
 
 ```
 
+## tipsi_tools.django.fields.ChoicesEnum
+
+Used for choices attribute for in model field
+
+```
+class FooBarEnum(ChoicesEnum):
+    foo = 1
+    bar = 2
+
+class ExampleModel(models.Model):
+    type = models.IntegerField(choices=FooBarEnum.get_choices())
+```
+
 
 ## tipsi_tools.drf.use_form
 
