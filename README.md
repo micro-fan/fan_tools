@@ -314,6 +314,14 @@ def my_api(data):
 ```
 
 
+## tipsi_tools.aio_utils.DbRecordsProcessorWorker
+
+Asyncio worker which wait for new records in postgres db table and process them.
+
+## tipsi_tools.aio_utils.dict_query/sql_update
+aiopg shortcuts
+
+
 ## tipsi_tools.python.execfile
 
 Backport of python's 2 `execfile` function.

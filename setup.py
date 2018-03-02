@@ -29,6 +29,10 @@ setup(
         'logging': [
             'safe-logger>=1.2.1',
             'python-json-logger==0.1.7',
+        ],
+        'aio_utils': [
+            'aiopg',
+            'psycopg2-binary',
         ]
     },
     tests_require=[
