@@ -24,22 +24,21 @@ def parse_doc(doc):
     """
     if not doc:
         return {}
-
     out = {}
     for s in doc.split('\n'):
-        s = s.strip().split(':')
+        s = s.strip().split(':', maxsplit=1)
         if len(s) == 2:
             out[s[0]] = s[1]
     return out
 
 
 class SerializerField:
-    @staticmethod
-    def _method_field(method):
+    def _method_field(self, method):
         if method['method_name']:
             params = parse_doc(method['method_doc'])
             if 'type' in params:
-                return p(params['type'])
+                _type = params['type']
+                return self.parse(_type) if ':any:' in _type else p(params['type'])
             return p('METHOD_NEED_TYPE_STUB: {}'.format(method['method_name']))
         return p('METHOD_FIELD_STUB')
 
@@ -78,7 +77,14 @@ class SerializerField:
         elif 'dyn_field_type' in type_data:
             _type = self._dyn_field(type_data['dyn_field_type']['ref_name'])
         elif 'list_field_type' in type_data:
-            _type = self._dyn_list(type_data['list_field_type']['ref_name'])
+            child_type = type_data['list_field_type']
+            if 'ref_name' in child_type:
+                _type = self._dyn_list(type_data['list_field_type']['ref_name'])
+            elif 'primitive_type' in child_type:
+                p_type = child_type['primitive_type']
+                _type = p('list[{}]'.format(p_type))
+            else:
+                pass  # TODO: Process other cases
         elif 'doc_type' in type_data:
             _type = self._doc_field(type_data['doc_type'])
 
@@ -95,6 +101,8 @@ class SerializerField:
             _type += self.parse('|required|')[0]
         if field['allow_null']:
             _type += self.parse('|nullable|')[0]
+        if field.get('help_text'):
+            _type += nodes.Text(' ' + field['help_text'])
 
         name = nodes.entry('', p(field['name']))
         _type = nodes.entry('', _type)
