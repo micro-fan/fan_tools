@@ -1,6 +1,6 @@
 from contextlib import suppress
 
-from django.contrib.gis.db.models import MultiPointField
+from django.core.exceptions import ImproperlyConfigured
 from django.core.validators import RegexValidator
 from django.db.models import ForeignKey, AutoField, OneToOneField
 from rest_framework import fields
@@ -9,6 +9,12 @@ from rest_framework.serializers import ListSerializer
 from rest_framework_dyn_serializer import DynModelSerializer
 
 from tipsi_tools.drf.serializers import EnumSerializer
+
+try:
+    from django.contrib.gis.db.models import MultiPointField
+except ImproperlyConfigured as e:
+    print(f'WARNING: Can not import MultiPointField. Fields with this type will be skipped. ({e})')
+    MultiPointField = type(None)
 
 
 def fields_regexp(field):
