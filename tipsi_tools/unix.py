@@ -164,6 +164,7 @@ def cd(dir_name):
     os.chdir(dir_name)
     try:
         yield
+        os.chdir(old_path)
     except Exception:
         os.chdir(old_path)
         raise
