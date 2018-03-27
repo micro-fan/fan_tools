@@ -41,7 +41,7 @@ def base_handler(filename, **params):
         'level': 'DEBUG',
         'class': 'safe_logger.TimedRotatingFileHandlerSafe',
         'when': 'midnight',
-        'backupCount': 30,
+        'backupCount': 7,
         'formatter': 'standard',
         'filename': filename,
         **params,
