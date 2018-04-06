@@ -60,13 +60,18 @@ def get_plain_logname(base_name, root_dir, enable_json):
     return os.path.join(root_dir, '{}.log'.format(base_name))
 
 
-def setup_logger(base_name, root_dir=None, enable_json=True):
+def setup_logger(base_name, root_dir=None, enable_json=True,
+                 json_formatter='tipsi_tools.logging.JSFormatter'):
+    """
+    json_formatter:
+    'fan.contrib.django.span_formatter.SpanFormatter' - add INSTALLATION_ID, SPAN and etc
+    """
     if not root_dir:
         root_dir = os.environ.get('LOG_DIR')
     assert root_dir, 'You should pass root_dir parameter or set env LOG_DIR'
 
     JSON_FORMATTER = {
-        '()': 'tipsi_tools.logging.JSFormatter',
+        '()': json_formatter,
         'env_vars': ['HOST_TYPE', 'TIPSI_CONFIG', 'TIPSI_BRANCH', 'CONTAINER_TYPE'],
     }
 
@@ -97,3 +102,8 @@ def setup_logger(base_name, root_dir=None, enable_json=True):
                                                    formatter='json')
         LOGGING['loggers']['']['handlers'].append('json')
     logging.config.dictConfig(LOGGING)
+
+
+def setup_fan_logger(base_name, root_dir=None):
+    return setup_logger(base_name, root_dir, enable_json=True,
+                        json_formatter='fan.contrib.django.span_formatter.SpanFormatter')
