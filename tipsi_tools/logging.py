@@ -61,7 +61,8 @@ def get_plain_logname(base_name, root_dir, enable_json):
 
 
 def setup_logger(base_name, root_dir=None, enable_json=True,
-                 json_formatter='tipsi_tools.logging.JSFormatter'):
+                 json_formatter='tipsi_tools.logging.JSFormatter',
+                 loggers={}):
     """
     json_formatter:
     'fan.contrib.django.span_formatter.SpanFormatter' - add INSTALLATION_ID, SPAN and etc
@@ -75,6 +76,18 @@ def setup_logger(base_name, root_dir=None, enable_json=True,
         'env_vars': ['HOST_TYPE', 'TIPSI_CONFIG', 'TIPSI_BRANCH', 'CONTAINER_TYPE'],
     }
 
+    default_loggers = {
+        '': {
+            'handlers': ['default'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'boto3': {'level': 'INFO', },
+        'botocore': {'level': 'INFO', },
+        'kazoo': {'level': 'INFO', },
+        'urllib3': {'level': 'INFO', }
+    }
+
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -85,17 +98,7 @@ def setup_logger(base_name, root_dir=None, enable_json=True,
         'handlers': {
             'default': base_handler(get_plain_logname(base_name, root_dir, enable_json)),
         },
-        'loggers': {
-            '': {
-                'handlers': ['default'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
-            'boto3': {'level': 'INFO', },
-            'botocore': {'level': 'INFO', },
-            'kazoo': {'level': 'INFO', },
-            'urllib3': {'level': 'INFO', }
-        }
+        'loggers': {**default_loggers, **loggers}
     }
     if enable_json:
         LOGGING['handlers']['json'] = base_handler(os.path.join(root_dir, '{}.json_log'.format(base_name)),
