@@ -10,10 +10,10 @@ def use_form(form_class, request=None, **top_kwargs):
     def validated_form(request, **kwargs):
         # import ipdb; ipdb.set_trace()
         data = request.query_params.dict() if request.method in ['GET'] else request.data
-        if isinstance(data, dict):
-            form = form_class(data={**data, **kwargs})
-        elif isinstance(data, QueryDict):
+        if isinstance(data, QueryDict):
             form = form_class(data={**data.dict(), **kwargs})
+        elif isinstance(data, dict):
+            form = form_class(data={**data, **kwargs})
         else:
             form = form_class(data=data, **kwargs)
         form.is_valid(raise_exception=True)
