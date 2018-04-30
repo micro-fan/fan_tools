@@ -1,3 +1,4 @@
+from django.http import QueryDict
 from rest_framework.views import APIView
 
 
@@ -11,6 +12,8 @@ def use_form(form_class, request=None, **top_kwargs):
         data = request.query_params.dict() if request.method in ['GET'] else request.data
         if isinstance(data, dict):
             form = form_class(data={**data, **kwargs})
+        elif isinstance(data, QueryDict):
+            form = form_class(data={**data.dict(), **kwargs})
         else:
             form = form_class(data=data, **kwargs)
         form.is_valid(raise_exception=True)
