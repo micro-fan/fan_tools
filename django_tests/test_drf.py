@@ -2,6 +2,7 @@ import pytest
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.request import Request
+from rest_framework.parsers import MultiPartParser, JSONParser
 from rest_framework.test import APIRequestFactory
 
 
@@ -19,7 +20,7 @@ invalid = {'test_int': 'aa', 'test_str': ''}
 
 class FactoryWrapper(APIRequestFactory):
     def request(self, *args, **kwargs):
-        return Request(super().request(*args, **kwargs))
+        return Request(super().request(*args, **kwargs), parsers=[MultiPartParser(), JSONParser()])
 
 
 @pytest.fixture
@@ -27,10 +28,16 @@ def request_factory():
     yield FactoryWrapper()
 
 
-def test_01_use_form(request_factory):
+@pytest.mark.parametrize('fmt', ['json', 'multipart'])
+def test_01_use_form(request_factory, fmt):
     out = use_form(SimpleForm, request_factory.get('', valid))
     assert out == valid
     out = use_form(SimpleForm, request_factory.get('', valid), test_int=1000)
+    assert out == {**valid, 'test_int': 1000}
+
+    out = use_form(SimpleForm, request_factory.post('', valid, format=fmt))
+    assert out == valid
+    out = use_form(SimpleForm, request_factory.post('', valid, format=fmt), test_int=1000)
     assert out == {**valid, 'test_int': 1000}
 
 
