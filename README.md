@@ -291,6 +291,61 @@ class ExampleModel(models.Model):
 ```
 
 
+## tipsi_tools.django.db.utils.set_word_similarity_threshold
+
+Allow to set postgres trigram word similarity threshold for default django database connection
+
+```
+set_word_similarity_threshold(0.4)
+```
+
+
+## tipsi_tools.django.db.pgfields.LTreeField
+
+Django postgres ltree field type
+
+```
+class LTreeExample(models.Model):
+    path = LTreeField()
+```
+
+
+## tipsi_tools.django.db.pgfields.LTreeDescendant
+
+Lookup for postgres ltree
+
+```
+# Add this import to models.py (file should be imported before lookup usage)
+import tipsi_tools.django.db.pgfields  # noqa
+
+LTreeExample.objects.filter(path__descendant='root.level1')
+
+```
+
+
+## tipsi_tools.django.db.pgfields.SimilarityLookup
+
+Postgres `text %> text` operator
+
+```
+# Add this import to models.py (file should be imported before lookup usage)
+import tipsi_tools.django.db.pgfields  # noqa
+
+Books.objects.filter(title__similar='Animal Farm')
+```
+
+## tipsi_tools.django.db.pgfields.WordSimilarity
+
+Postgres `text1 <<-> text2` operator. It returns `1 - word_similarity(text1, text2)`
+
+```
+from django.db.models import Value, F
+
+similarity = WordSimilarity(Value('Animal Farm'), F('title'))
+Books.objects.annotate(similarity=similarity)
+```
+
+
 ## tipsi_tools.drf.use_form
 
 Helps to use power of serializers for simple APIs checks.
