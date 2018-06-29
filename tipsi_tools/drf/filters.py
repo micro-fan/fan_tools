@@ -13,6 +13,8 @@ class EnumFilter(django_filters.CharFilter):
         super().__init__(*args, **kwargs)
 
     def filter(self, qs, name):
+        # In django filters 2.0 `name` is renamed to `field_name`
+        self_name = getattr(self, 'name', None) or getattr(self, 'field_name')
         try:
             q_objects = []
             if isinstance(name, str):
@@ -20,12 +22,12 @@ class EnumFilter(django_filters.CharFilter):
                 for n in names:
                     if hasattr(self._enum, n):
                         value = getattr(self._enum, n)
-                        q = Q(**{'{}__exact'.format(self.name): value})
+                        q = Q(**{'{}__exact'.format(self_name): value})
                         q_objects.append(q)
                     elif n == 'null':
-                        q_objects.append(Q(**{'{}__isnull'.format(self.name): True}))
+                        q_objects.append(Q(**{'{}__isnull'.format(self_name): True}))
             elif name is None:
-                q_objects.append(Q(**{'{}__isnull'.format(self.name): True}))
+                q_objects.append(Q(**{'{}__isnull'.format(self_name): True}))
             else:
                 raise AttributeError
             if q_objects:
@@ -34,5 +36,5 @@ class EnumFilter(django_filters.CharFilter):
                 return qs
 
         except Exception:
-            logging.exception('Failed to convert value: {} {}'.format(self.name, name))
+            logging.exception('Failed to convert value: {} {}'.format(self_name, name))
             return super(EnumFilter, self).filter(qs, None)
