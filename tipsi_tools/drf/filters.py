@@ -7,9 +7,8 @@ from django.db.models import Q
 
 
 class EnumFilter(django_filters.CharFilter):
-    def __init__(self, enum, *args, field_name=None, **kwargs):
+    def __init__(self, enum, *args, **kwargs):
         self._enum = enum
-        self._field_name = field_name
         super().__init__(*args, **kwargs)
 
     def filter(self, qs, name):
