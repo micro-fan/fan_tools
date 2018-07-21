@@ -65,48 +65,52 @@ class SerializerField:
         self.directive = directive
         self.parse = directive.parse
 
-    def process(self):
-        field = self.f
-        type_data = self.f['type']
+    def field_type(self, field):
+        field_type = None
+        type_data = field['type']
 
-        _type = None
         if 'primitive_type' in type_data:
-            _type = p(type_data['primitive_type'])
+            field_type = p(type_data['primitive_type'])
         elif 'method_type' in type_data:
-            _type = self._method_field(type_data['method_type'])
+            field_type = self._method_field(type_data['method_type'])
         elif 'dyn_field_type' in type_data:
-            _type = self._dyn_field(type_data['dyn_field_type']['ref_name'])
+            field_type = self._dyn_field(type_data['dyn_field_type']['ref_name'])
         elif 'list_field_type' in type_data:
             child_type = type_data['list_field_type']
             if 'ref_name' in child_type:
-                _type = self._dyn_list(type_data['list_field_type']['ref_name'])
+                field_type = self._dyn_list(type_data['list_field_type']['ref_name'])
             elif 'primitive_type' in child_type:
                 p_type = child_type['primitive_type']
-                _type = p('list[{}]'.format(p_type))
+                field_type = p('list[{}]'.format(p_type))
             else:
                 pass  # TODO: Process other cases
         elif 'doc_type' in type_data:
-            _type = self._doc_field(type_data['doc_type'])
+            field_type = self._doc_field(type_data['doc_type'])
 
-        if not _type:
-            _type = self._none_field(field)
+        if not field_type:
+            field_type = self._none_field(field)
 
-        _type += nodes.Text(' ')
+        field_type += nodes.Text(' ')
 
         if field['readonly']:
-            _type += self.parse('|readonly|')[0]
+            field_type += self.parse('|readonly|')[0]
         if field['write_only']:
-            _type += self.parse('|writeonly|')[0]
+            field_type += self.parse('|writeonly|')[0]
         if field['required']:
-            _type += self.parse('|required|')[0]
+            field_type += self.parse('|required|')[0]
         if field['allow_null']:
-            _type += self.parse('|nullable|')[0]
-        if field.get('help_text'):
-            _type += nodes.Text(' ' + field['help_text'])
+            field_type += self.parse('|nullable|')[0]
 
-        name = nodes.entry('', p(field['name']))
-        _type = nodes.entry('', _type)
-        content = nodes.row('', name, _type)
+        return field_type
+
+    def process(self):
+        field = self.f
+
+        field_name = nodes.entry('', p(field['name']))
+        field_type = nodes.entry('', self.field_type(field))
+        field_description = nodes.entry('', p(nodes.Text(field.get('help_text', '') or '')))
+
+        content = nodes.row('', field_name, field_type, field_description)
         return content
 
 
@@ -124,26 +128,40 @@ class DynSerializer(Directive, ParseMixin):
 
         class_name = obj_data['class_name']
 
-        fields = nodes.tbody('')
-        fields.extend(p_fields)
+        table_fields = nodes.tbody('')
+        table_fields.extend(p_fields)
 
         name = nodes.title('', '{}'.format(class_name))
-        thead = nodes.thead('', nodes.row('',
-                                          nodes.entry('', p('name')),
-                                          nodes.entry('', p('type'))))
+        table_head = nodes.thead(
+            '',
+            nodes.row(
+                '',
+                nodes.entry('', p('name')),
+                nodes.entry('', p('type')),
+                nodes.entry('', p('description')),
+            )
+        )
         tbl = nodes.table()
         tg = nodes.tgroup()
         tbl.append(tg)
         tg.append(nodes.colspec(colwidth=1))
         tg.append(nodes.colspec(colwidth=8))
-        tg.append(thead)
-        tg.append(fields)
-        cname = 'Class: *{}.{}*'.format(obj_data['class_module'], class_name)
-        param = 'Filter field: *{}*'.format(obj_data['field_param'])
-        full_name = self.parse(cname)
-        filter_param = self.parse(param)
-        raw = nodes.section('', name, full_name, filter_param,
-                            p('', nodes.topic('', tbl)))
+        tg.append(nodes.colspec(colwidth=8))
+        tg.append(table_head)
+        tg.append(table_fields)
+
+        class_descr = 'Class: *{}.{}*'.format(obj_data['class_module'], class_name)
+        filter_field_param = 'Filter field: *{}*'.format(obj_data['field_param'])
+        description = (obj_data.get('class_doc', '') or '').strip()
+        full_name = self.parse(class_descr)
+        filter_param = self.parse(filter_field_param)
+
+        sections = ['', name, ]
+        if description:
+            sections.append(self.parse(description))
+        sections.extend([full_name, filter_param, p('', nodes.topic('', tbl))])
+
+        raw = nodes.section(*sections)
 
         target = self.parse('.. _{name}:'.format(name=class_name))
         return [target, raw]

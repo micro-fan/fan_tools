@@ -90,7 +90,8 @@ def serializer_doc_info(serializer, path_info=''):
         'fields': [
             process_fields(name, field, serializer_obj)
             for name, field in sorted(serializer_obj.fields.items())
-        ]
+        ],
+        'class_doc': serializer.__doc__,
     }
 
 
