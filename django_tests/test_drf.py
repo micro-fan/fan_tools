@@ -1,12 +1,11 @@
 import pytest
+from tipsi_tools.drf import use_form
+
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.request import Request
-from rest_framework.parsers import MultiPartParser, JSONParser
 from rest_framework.test import APIRequestFactory
-
-
-from tipsi_tools.drf import use_form
 
 
 class SimpleForm(serializers.Serializer):
@@ -44,8 +43,10 @@ def test_01_use_form(request_factory, fmt):
 def test_02_use_form_validation_error(request_factory):
     with pytest.raises(ValidationError) as e:
         use_form(SimpleForm, request_factory.get('', invalid))
-    assert e.value.detail == {'test_int': ['A valid integer is required.'],
-                              'test_str': ['This field may not be blank.']}
+    assert e.value.detail == {
+        'test_int': ['A valid integer is required.'],
+        'test_str': ['This field may not be blank.'],
+    }
 
 
 @use_form(SimpleForm)
@@ -58,8 +59,10 @@ def test_03_decorator(request_factory):
     assert out == valid
     with pytest.raises(ValidationError) as e:
         decorated(request_factory.get('', invalid))
-    assert e.value.detail == {'test_int': ['A valid integer is required.'],
-                              'test_str': ['This field may not be blank.']}
+    assert e.value.detail == {
+        'test_int': ['A valid integer is required.'],
+        'test_str': ['This field may not be blank.'],
+    }
 
 
 class TopForm(SimpleForm):

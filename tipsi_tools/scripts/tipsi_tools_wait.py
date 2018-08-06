@@ -1,7 +1,6 @@
 import argparse
 
-from tipsi_tools.unix import wait_socket, wait_no_socket
-
+from tipsi_tools.unix import wait_no_socket, wait_socket
 
 parser = argparse.ArgumentParser(description='Wait for socket')
 

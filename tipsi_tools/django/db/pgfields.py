@@ -1,4 +1,4 @@
-from django.db.models import CharField, Field, Lookup, Func
+from django.db.models import CharField, Field, Func, Lookup
 
 
 class LTreeField(CharField):

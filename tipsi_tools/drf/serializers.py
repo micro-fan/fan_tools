@@ -1,11 +1,10 @@
 from enum import Enum
+
 from rest_framework import fields
 
 
 class EnumSerializer(fields.Field):
-    default_error_messages = {
-        'invalid': '{value!r} not valid value for: {values}',
-    }
+    default_error_messages = {'invalid': '{value!r} not valid value for: {values}'}
 
     def __init__(self, enum, *args, **kwargs):
         super().__init__(*args, **kwargs)

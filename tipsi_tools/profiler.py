@@ -15,6 +15,7 @@ class Profiler(cProfile.Profile):
     This code will generate `profile_name_1.callgrind` file. Counter increases each time profile
      called with the same name. To view these files use kcachegrind.
     """
+
     _instance = None
 
     def __init__(self, *args, **kwargs):

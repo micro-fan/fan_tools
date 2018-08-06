@@ -7,6 +7,7 @@ def use_form(form_class, request=None, **top_kwargs):
     Validate request (query_params or request body with args from url) with serializer and pass
     validated data dict to the view function instead of request object.
     """
+
     def validated_form(request, **kwargs):
         # import ipdb; ipdb.set_trace()
         data = request.query_params.dict() if request.method in ['GET'] else request.data
@@ -44,4 +45,5 @@ def use_form(form_class, request=None, **top_kwargs):
             return (method_wrap if is_method else function_wrap)(*args, **kwargs)
 
         return inner
+
     return wrap

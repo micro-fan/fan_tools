@@ -1,10 +1,9 @@
-import django_filters
-from rest_framework import serializers, viewsets
-from django_filters.rest_framework import DjangoFilterBackend
-
 from tipsi_tools.drf.filters import EnumFilter
 from tipsi_tools.drf.serializers import EnumSerializer
 
+import django_filters
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import serializers, viewsets
 from sampleapp.models import Article, ArticleType, Review
 
 

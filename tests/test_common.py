@@ -1,5 +1,4 @@
 import pytest
-
 from tipsi_tools.django.fields import ChoicesEnum
 
 
@@ -13,9 +12,6 @@ def foobar_enum():
 
 
 def test_choices_enum(foobar_enum):
-    expected = [
-        (1, 'foo', ),
-        (2, 'bar', ),
-    ]
+    expected = [(1, 'foo'), (2, 'bar')]
     choices = foobar_enum.get_choices()
     assert choices == expected, choices

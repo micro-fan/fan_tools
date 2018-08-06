@@ -1,6 +1,6 @@
 import os
 import sys
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import ROUND_HALF_UP, Decimal
 
 
 def execfile(fname, _globals, _locals):

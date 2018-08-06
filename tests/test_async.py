@@ -24,13 +24,17 @@ class AsyncCase(AIOTestCase):
 
 @pytest.mark.asyncio
 async def test_asucc():
-    ret, out, err = await asucc('echo 1; echo 2 >&2; echo 3 >&2; echo 4; sleep 1', check_stderr=False)
+    ret, out, err = await asucc(
+        'echo 1; echo 2 >&2; echo 3 >&2; echo 4; sleep 1', check_stderr=False
+    )
     assert ret == 0
     assert out == ['1', '4']
     assert err == ['2', '3']
 
     # Test for out not reused from prev run
-    ret, out, err = await asucc('echo 1; echo 2 >&2; echo 3 >&2; echo 4; sleep 1', check_stderr=False)
+    ret, out, err = await asucc(
+        'echo 1; echo 2 >&2; echo 3 >&2; echo 4; sleep 1', check_stderr=False
+    )
     assert ret == 0
     assert out == ['1', '4']
     assert err == ['2', '3']

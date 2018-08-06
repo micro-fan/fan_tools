@@ -6,9 +6,8 @@ import socket
 import subprocess
 import time
 from asyncio.subprocess import PIPE
-from contextlib import closing, contextmanager
 from collections import ChainMap
-
+from contextlib import closing, contextmanager
 
 log = logging.getLogger('tipsi_tools.unix')
 
@@ -54,7 +53,6 @@ def succ(cmd, check_stderr=True, stdout=None, stderr=None):
     return code, out, err
 
 
-
 async def process_pipe(out, pipe, proc, log_fun):
     while True:
         line = await pipe.readline()
@@ -67,7 +65,9 @@ async def process_pipe(out, pipe, proc, log_fun):
         await asyncio.sleep(0.0001)
 
 
-async def asucc(cmd, check_stderr=True, pid_future=None, with_log=True, stdout=None, stderr=None, loop=None):
+async def asucc(
+    cmd, check_stderr=True, pid_future=None, with_log=True, stdout=None, stderr=None, loop=None
+):
     proc = await asyncio.create_subprocess_shell(cmd, stderr=PIPE, stdout=PIPE, loop=loop)
     if pid_future and not pid_future.done():
         pid_future.set_result(proc.pid)
@@ -150,7 +150,7 @@ def source(fname):
     rex = re.compile('(?:export |declare -x )?(.*?)="(.*?)"')
     out = call_out('source {} && export'.format(fname))
     out = [x for x in out if 'export' in x or 'declare' in x]
-    out = {k:v for k, v in [rex.match(x).groups() for x in out if rex.match(x)]}
+    out = {k: v for k, v in [rex.match(x).groups() for x in out if rex.match(x)]}
     for k, v in out.items():
         os.environ[k] = v
 

@@ -6,6 +6,7 @@ _global = {'request_id': None, 'data': {}}
 def _get_request_unique_cache():
     try:
         import uwsgi
+
         rid = uwsgi.request_id()
         if rid != _global['request_id']:
             _global['request_id'] = rid

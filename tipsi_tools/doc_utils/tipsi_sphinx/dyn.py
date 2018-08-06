@@ -4,13 +4,13 @@ import argparse
 import inspect
 import json
 import os
+import sys
 from functools import partial
 from importlib import import_module
 
-import sys
-from rest_framework_dyn_serializer import DynModelSerializer
-
 from tipsi_tools.doc_utils.tipsi_sphinx.dyn_json import serializer_doc_info
+
+from rest_framework_dyn_serializer import DynModelSerializer
 
 
 def compose(*funs):
@@ -45,7 +45,7 @@ def get_dynserializers(module):
     filters = (
         lambda i: inspect.isclass(i),
         lambda i: i != DynModelSerializer,
-        lambda i: not(hasattr(i, 'Meta') and getattr(i.Meta, 'abstract', False)),
+        lambda i: not (hasattr(i, 'Meta') and getattr(i.Meta, 'abstract', False)),
         lambda i: issubclass(i, DynModelSerializer) or getattr(i, '_write_docs', False),
     )
 
@@ -100,20 +100,21 @@ def process(apps, fun):
 
 parser = argparse.ArgumentParser(description='Parse serializers sources')
 
-parser.add_argument('--rst', action='store_true', default=False,
-                    help='Output rst with serializers')
-parser.add_argument('--artifacts', action='store_true', default=False,
-                    help='Write serializers artifacts')
+parser.add_argument('--rst', action='store_true', default=False, help='Output rst with serializers')
+parser.add_argument(
+    '--artifacts', action='store_true', default=False, help='Write serializers artifacts'
+)
 
 
 def main():
     sys.path.append('.')
     args = parser.parse_args()
 
-    if not any((args.rst, args.artifacts, )):
+    if not any((args.rst, args.artifacts)):
         parser.print_help()
 
     import django
+
     django.setup()
     from django.apps import apps
 

@@ -2,8 +2,8 @@ import argparse
 import os
 import re
 import sys
-import yaml
 
+import yaml
 
 parser = argparse.ArgumentParser(description='fill yaml with environment variables')
 parser.add_argument('src', help='source yaml file')

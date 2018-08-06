@@ -4,7 +4,6 @@ import os
 
 from tipsi_tools.unix import succ
 
-
 parser = argparse.ArgumentParser(description='ci script: build, push branches/tags, cache')
 parser.add_argument('-r', '--repo', dest='repo', help='push repo')
 parser.add_argument('-p', '--project', dest='project')
@@ -15,10 +14,14 @@ parser.add_argument('--push-branches', dest='push_branches', default='master,sta
 
 parser.add_argument('--docker-file', dest='docker_file', default='Dockerfile')
 parser.add_argument('--test', help='test command', default='true')
-parser.add_argument('--cache-name', help='image cache name',
-                    default='{}_cache'.format(os.environ.get('CI_PROJECT_NAME', 'default')))
-parser.add_argument('--temp-name', dest='temp_name', help='temp image name',
-                    default=os.environ.get('CI_COMMIT_SHA'))
+parser.add_argument(
+    '--cache-name',
+    help='image cache name',
+    default='{}_cache'.format(os.environ.get('CI_PROJECT_NAME', 'default')),
+)
+parser.add_argument(
+    '--temp-name', dest='temp_name', help='temp image name', default=os.environ.get('CI_COMMIT_SHA')
+)
 args = parser.parse_args()
 
 FULL_BRANCH = '{}/{}:{}'.format(args.repo, args.project, args.branch)

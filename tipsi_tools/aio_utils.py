@@ -1,14 +1,16 @@
 import asyncio
 import logging
 
-import aiopg
 from psycopg2.extras import DictCursor
+
+import aiopg
 
 
 class DbRecordsProcessorWorker:
     """
     Asyncio worker which wait for new records in pg db table and process them.
     """
+
     MAX_LOOP = 12
 
     def __init__(self, dsn, worker_class, max_loop=MAX_LOOP):

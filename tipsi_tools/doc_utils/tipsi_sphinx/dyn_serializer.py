@@ -139,7 +139,7 @@ class DynSerializer(Directive, ParseMixin):
                 nodes.entry('', p('name')),
                 nodes.entry('', p('type')),
                 nodes.entry('', p('description')),
-            )
+            ),
         )
         tbl = nodes.table()
         tg = nodes.tgroup()
@@ -156,7 +156,7 @@ class DynSerializer(Directive, ParseMixin):
         full_name = self.parse(class_descr)
         filter_param = self.parse(filter_field_param)
 
-        sections = ['', name, ]
+        sections = ['', name]
         if description:
             sections.append(self.parse(description))
         sections.extend([full_name, filter_param, p('', nodes.topic('', tbl))])

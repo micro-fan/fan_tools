@@ -28,6 +28,7 @@ class Review(models.Model):
     summary = models.CharField(max_length=255)
     content = models.TextField()
     stars = models.IntegerField()
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, null=True,
-                             blank=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, null=True, blank=True
+    )
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='reviews')

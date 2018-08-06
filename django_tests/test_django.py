@@ -2,35 +2,37 @@ from datetime import date
 from unittest import mock
 
 import pytest
-from django.db import transaction, connection, models
+from tipsi_tools.django import call_once_on_commit
+
+from django.db import connection, models, transaction
 from django.test import TestCase
 from rest_framework.test import APIClient
-from sampleapp.models import Author, Article, Review, ArticleType
-
-from tipsi_tools.django import call_once_on_commit
+from sampleapp.models import Article, ArticleType, Author, Review
 
 
 class MainTest(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-        self.author1 = Author.objects.create(name='author 1',
-                                             birth_date=date(1985, 1, 31))
+        self.author1 = Author.objects.create(name='author 1', birth_date=date(1985, 1, 31))
 
-        self.author2 = Author.objects.create(name='author 2',
-                                             birth_date=date(1986, 2, 20))
+        self.author2 = Author.objects.create(name='author 2', birth_date=date(1986, 2, 20))
 
         self.articles = []
 
         for i in range(5):
             article_type = i % 3 + 1
             for author in [self.author1, self.author2]:
-                article = Article.objects.create(title='article {} by {}'.format(i, author.name),
-                                                 content='article content {}'.format(i),
-                                                 author=author,
-                                                 type=article_type)
+                article = Article.objects.create(
+                    title='article {} by {}'.format(i, author.name),
+                    content='article content {}'.format(i),
+                    author=author,
+                    type=article_type,
+                )
                 self.articles.append(article)
-        Article.objects.create(title='null article', content='null content', author=author, type=None)
+        Article.objects.create(
+            title='null article', content='null content', author=author, type=None
+        )
 
     def test_get_articles_of_review_type(self):
         url = '/article/'.format(self.articles[0].id)
@@ -69,16 +71,19 @@ class MainTest(TestCase):
 class ReviewTest(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.author = Author.objects.create(name='author 1',
-                                            birth_date=date(1985, 1, 31))
-        self.article = Article.objects.create(title='article by {}'.format(self.author.name),
-                                              content='article content',
-                                              author=self.author,
-                                              type=ArticleType.article)
-        self.ads = Article.objects.create(title='ads by {}'.format(self.author.name),
-                                          content='ads content',
-                                          author=self.author,
-                                          type=ArticleType.ads)
+        self.author = Author.objects.create(name='author 1', birth_date=date(1985, 1, 31))
+        self.article = Article.objects.create(
+            title='article by {}'.format(self.author.name),
+            content='article content',
+            author=self.author,
+            type=ArticleType.article,
+        )
+        self.ads = Article.objects.create(
+            title='ads by {}'.format(self.author.name),
+            content='ads content',
+            author=self.author,
+            type=ArticleType.ads,
+        )
 
         self.reviews = []
         for a in [self.article, self.ads]:
@@ -132,8 +137,7 @@ def author_signal(author):
 
 
 def test_once_on_commit(author, req_cache, author_signal):
-    with mock.patch(
-            'tipsi_tools.django._get_request_unique_cache', side_effect=lambda: req_cache):
+    with mock.patch('tipsi_tools.django._get_request_unique_cache', side_effect=lambda: req_cache):
         with transaction.atomic():
             author.birth_date = date(1986, 1, 31)
             author.save()

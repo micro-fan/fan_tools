@@ -13,8 +13,7 @@ class LoggerMiddleware(object):
             data = request.body.decode('utf8')[:3000]
         except Exception as e:
             data = '<Error: {}>'.format(e)
-        dct = {'meta': str(request.META),
-               'data': data}
+        dct = {'meta': str(request.META), 'data': data}
         msg = '{} {} => {}'.format(request.method, request.get_raw_uri(), json.dumps(dct))
         self.log.debug(msg)
 
@@ -24,9 +23,10 @@ class LoggerMiddleware(object):
 
 
 class DeprecatedLoggerMiddleware(LoggerMiddleware):
-    '''
+    """
     Django < 1.10 compatible middleware
-    '''
+    """
+
     def __init__(self):
         pass
 

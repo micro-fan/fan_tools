@@ -1,8 +1,7 @@
-import django_filters
+import logging
 from functools import reduce
 
-import logging
-
+import django_filters
 from django.db.models import Q
 
 

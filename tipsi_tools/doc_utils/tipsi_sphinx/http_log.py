@@ -1,16 +1,16 @@
-import os
 import json
+import os
 from itertools import chain
 from pprint import pformat
 from urllib.parse import unquote, urlencode
 
-from jinja2 import Template
 from docutils.parsers.rst import Directive
+from jinja2 import Template
 
 from .parse_mixin import ParseMixin
 
-
-TMPL = Template('''
+TMPL = Template(
+    '''
 .. sourcecode:: http
 
    {{method|upper}} {{path}}{% if query %}?{{query}}{% endif %} HTTP/1.1{% if payload is not none %}
@@ -25,7 +25,8 @@ TMPL = Template('''
    Content-Type: text/javascript
 
    {{response | indent(3, False)}}
-''')
+'''
+)
 
 
 class HttpLog(Directive, ParseMixin):

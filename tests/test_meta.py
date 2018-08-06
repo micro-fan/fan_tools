@@ -1,5 +1,6 @@
-from tipsi_tools.testing.meta import PropsMeta
 from unittest import TestCase
+
+from tipsi_tools.testing.meta import PropsMeta
 
 
 class MetaCase(TestCase, metaclass=PropsMeta):
