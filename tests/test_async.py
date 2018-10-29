@@ -48,9 +48,15 @@ async def test_asucc_handle_error():
     assert stderr, 'Should have something: {}'.format(stderr)
 
 
+async def run_sleep(loop):
+    return await asucc('sleep 10000', loop=loop)
+
+
 @pytest.mark.asyncio
 async def test_asucc_kill(event_loop):
-    asucc_wait = asyncio.ensure_future(asucc('sleep 10000', loop=event_loop))
+    asucc_wait = asyncio.ensure_future(run_sleep(event_loop))
     await asyncio.sleep(0.01)
     asucc_wait.cancel()
-    await asyncio.sleep(0.1)
+    await asyncio.sleep(0.01)
+    resp = await asucc_wait
+    assert resp == (None, [], [])

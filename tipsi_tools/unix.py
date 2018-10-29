@@ -86,8 +86,8 @@ async def asucc(
     asyncio.ensure_future(process_pipe(err, proc.stderr, proc, log_warning), loop=loop)
     asyncio.ensure_future(process_pipe(out, proc.stdout, proc, log_debug), loop=loop)
 
-    code = await proc.wait()
     try:
+        code = await proc.wait()
         assert code == 0, 'Return: {} {}\nStderr: {}'.format(code, cmd, err)
         if check_stderr:
             assert err == [], 'Error: {} {}'.format(err, code)
