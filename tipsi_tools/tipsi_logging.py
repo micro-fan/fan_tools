@@ -1,5 +1,5 @@
-import os
 import logging.config
+import os
 
 from pythonjsonlogger.jsonlogger import JsonFormatter
 
@@ -22,9 +22,8 @@ class JSFormatter(JsonFormatter):
         'processName',
         'relativeCreated',
         'thread',
-        'threadName'
+        'threadName',
     ]
-
 
     def __init__(self, *args, env_vars=[], **kwargs):
         super(JSFormatter, self).__init__(*args, **kwargs)
@@ -60,9 +59,13 @@ def get_plain_logname(base_name, root_dir, enable_json):
     return os.path.join(root_dir, '{}.log'.format(base_name))
 
 
-def setup_logger(base_name, root_dir=None, enable_json=True,
-                 json_formatter='tipsi_tools.logging.JSFormatter',
-                 loggers={}):
+def setup_logger(
+    base_name,
+    root_dir=None,
+    enable_json=True,
+    json_formatter='tipsi_tools.logging.JSFormatter',
+    loggers={},
+):
     """
     json_formatter:
     'fan.contrib.django.span_formatter.SpanFormatter' - add INSTALLATION_ID, SPAN and etc
@@ -77,15 +80,12 @@ def setup_logger(base_name, root_dir=None, enable_json=True,
     }
 
     default_loggers = {
-        '': {
-            'handlers': ['default'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'boto3': {'level': 'INFO', },
-        'botocore': {'level': 'INFO', },
-        'kazoo': {'level': 'INFO', },
-        'urllib3': {'level': 'INFO', }
+        '': {'handlers': ['default'], 'level': 'DEBUG', 'propagate': True},
+        'googleapicliet.discovery_cache': {'level': 'ERROR'},
+        'boto3': {'level': 'INFO'},
+        'botocore': {'level': 'INFO'},
+        'kazoo': {'level': 'INFO'},
+        'urllib3': {'level': 'INFO'},
     }
 
     LOGGING = {
@@ -95,18 +95,21 @@ def setup_logger(base_name, root_dir=None, enable_json=True,
             'json': JSON_FORMATTER,
             'standard': {'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'},
         },
-        'handlers': {
-            'default': base_handler(get_plain_logname(base_name, root_dir, enable_json)),
-        },
-        'loggers': {**default_loggers, **loggers}
+        'handlers': {'default': base_handler(get_plain_logname(base_name, root_dir, enable_json))},
+        'loggers': {**default_loggers, **loggers},
     }
     if enable_json:
-        LOGGING['handlers']['json'] = base_handler(os.path.join(root_dir, '{}.json_log'.format(base_name)),
-                                                   formatter='json')
+        LOGGING['handlers']['json'] = base_handler(
+            os.path.join(root_dir, '{}.json_log'.format(base_name)), formatter='json'
+        )
         LOGGING['loggers']['']['handlers'].append('json')
     logging.config.dictConfig(LOGGING)
 
 
 def setup_fan_logger(base_name, root_dir=None):
-    return setup_logger(base_name, root_dir, enable_json=True,
-                        json_formatter='fan.contrib.django.span_formatter.SpanFormatter')
+    return setup_logger(
+        base_name,
+        root_dir,
+        enable_json=True,
+        json_formatter='fan.contrib.django.span_formatter.SpanFormatter',
+    )
