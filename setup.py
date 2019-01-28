@@ -6,12 +6,17 @@ with open('tipsi_tools/__init__.py', 'r') as f:
             version = line.strip().split('=')[1].strip(' \'"')
             break
 
+with open('README.md', 'r', encoding='utf-8') as f:
+    readme = f.read()
+
+
 
 setup(
     name='tipsi_tools',
     packages=find_packages(exclude=('tests', 'django_tests.*', 'django_tests')),
     version=version,
     description='Various python stuff: testing, aio helpers, etc',
+    long_description=readme,
     author='cybergrind',
     author_email='cybergrind@gmail.com',
     url='http://github.com/tipsi/tipsi_tools',
@@ -57,8 +62,8 @@ setup(
         'Operating System :: POSIX :: Linux',
         'Operating System :: Unix',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: Implementation',
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Software Development',

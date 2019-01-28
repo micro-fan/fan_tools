@@ -68,7 +68,9 @@ async def process_pipe(out, pipe, proc, log_fun):
 async def asucc(
     cmd, check_stderr=True, pid_future=None, with_log=True, stdout=None, stderr=None, loop=None
 ):
-    proc = await asyncio.create_subprocess_shell(cmd, stderr=PIPE, stdout=PIPE, loop=loop)
+    proc = await asyncio.create_subprocess_shell(
+        cmd, stdin=PIPE, stderr=PIPE, stdout=PIPE, loop=loop
+    )
     if pid_future and not pid_future.done():
         pid_future.set_result(proc.pid)
 

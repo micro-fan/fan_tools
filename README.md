@@ -188,6 +188,24 @@ log.warn('test warn')
 log.error('test error')
 ```
 
+
+## tipsi_tools.mon_server.MetricsServer
+
+Sanic based server that servers metrics in prometheus format.
+
+```
+from sanic import Sanic
+
+from tipsi_tools.mon_server import MetricsServer
+from tipsi_tools.mon_server.certs import update_certs_loop
+
+app = Sanic()
+mserver = MetricsServer(app)
+mserver.add_task(update_certs_loop, hosts=['gettipsi.com', 'proofnetwork.io'])
+app.run(host='0.0.0.0', port=8000)
+```
+
+
 ## tipsi_tools.drf.serializers.EnumSerializer
 
 Allow you to deserealize incoming strings into `Enum` values.
