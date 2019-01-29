@@ -16,6 +16,7 @@ setup(
     packages=find_packages(exclude=('tests', 'django_tests.*', 'django_tests')),
     version=version,
     description='Various python stuff: testing, aio helpers, etc',
+    long_description_content_type='text/markdown',
     long_description=readme,
     author='cybergrind',
     author_email='cybergrind@gmail.com',
