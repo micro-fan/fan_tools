@@ -39,7 +39,7 @@ def mhook():
 
 @pytest.fixture
 def mserver(sanic_app, mhook):
-    server = MetricsServer(sanic_app)
+    server = MetricsServer(sanic_app, 'running')
     server.add_task(mhook.remember_update)
     yield server
 
@@ -82,11 +82,11 @@ def expect_metrics(get_metrics):
 
 
 async def test_01(expect_metrics, mhook):
-    await expect_metrics({})
+    await expect_metrics({'running': 1})
 
     mhook.push_metrics({'a': 1})
-    await expect_metrics({'a': 1})
+    await expect_metrics({'a': 1, 'running': 1})
 
     mhook.push_metrics({'b': 1})
-    await expect_metrics({'a': 0, 'b': 1})
+    await expect_metrics({'a': 0, 'b': 1, 'running': 1})
 

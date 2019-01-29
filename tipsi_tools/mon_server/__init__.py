@@ -17,11 +17,11 @@ class MetricsServer:
     You you should add monitoring functions with add_task
     Your update function will receive update_metrics function with all additional args
     """
-    def __init__(self, app):
+    def __init__(self, app, status_metric='running{example_var="default_env"}'):
         self.app = app
         self.app.add_route(self.expose_metrics, '/metrics')
-        self.metrics = ''
-        self.all_names = []
+        self.metrics = f'{status_metric} 1'
+        self.all_names = [{status_metric: 1}]
 
     def update_metrics(self, names, metrics):
         for name in names:

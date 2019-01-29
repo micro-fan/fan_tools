@@ -200,7 +200,7 @@ from tipsi_tools.mon_server import MetricsServer
 from tipsi_tools.mon_server.certs import update_certs_loop
 
 app = Sanic()
-mserver = MetricsServer(app)
+mserver = MetricsServer(app, status_metric='running{server="localhost"}')
 mserver.add_task(update_certs_loop, hosts=['gettipsi.com', 'proofnetwork.io'])
 app.run(host='0.0.0.0', port=8000)
 ```
