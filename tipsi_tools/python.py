@@ -24,5 +24,16 @@ def rel_path(path, check=True, depth=1):
     return full
 
 
+def auto_directory(rel_name):
+    """
+    if you're using py.path you make do that as:
+    py.path.local(full_path).ensure_dir()
+    """
+    dir_name = rel_path(rel_name, check=False)
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name, exist_ok=True)
+    return dir_name
+
+
 def usd_round(amount):
     return amount.quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
