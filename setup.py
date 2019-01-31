@@ -9,7 +9,7 @@ with open('tipsi_tools/__init__.py', 'r') as f:
 with open('README.md', 'r', encoding='utf-8') as f:
     readme = f.read()
 
-
+SANIC = 'sanic'
 
 setup(
     name='tipsi_tools',
@@ -22,28 +22,19 @@ setup(
     author_email='cybergrind@gmail.com',
     url='http://github.com/tipsi/tipsi_tools',
     keywords=['testing', 'asyncio'],
-    install_requires=[
-        'pyyaml>=3.12',
-        'python-json-logger>=0.1.5',
-    ],
+    install_requires=['pyyaml>=3.12', 'python-json-logger>=0.1.5'],
     extras_require={
         'doc_utils': [
             'rest_framework_dyn_serializer>=1.3.*',
             'docutils',
             'djangorestframework==3.7.*',
         ],
-        'logging': [
-            'safe-logger>=1.2.1',
-            'python-json-logger==0.1.7',
-        ],
-        'aio_utils': [
-            'aiopg',
-            'psycopg2-binary',
-        ]
+        'logging': ['safe-logger>=1.2.1', 'python-json-logger==0.1.7'],
+        'aio_utils': ['aiopg', 'psycopg2-binary'],
+        'monitoring': [SANIC],
+        'gitlab_monitoring': ['python-gitlab==1.0.2', SANIC],
     },
-    tests_require=[
-        'pytest==3.1.3',
-    ],
+    tests_require=['pytest==3.1.3'],
     entry_points={
         'console_scripts': [
             'tipsi_env_yaml=tipsi_tools.scripts.tipsi_env_yaml:main',
@@ -51,7 +42,7 @@ setup(
             'tipsi_wait=tipsi_tools.scripts.tipsi_tools_wait:main',
             'run_filebeat=tipsi_tools.scripts.run_filebeat:main',
             'doc_serializer=tipsi_tools.doc_utils.tipsi_sphinx.dyn:main',
-        ],
+        ]
     },
     classifiers=[
         'Development Status :: 4 - Beta',
