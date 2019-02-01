@@ -17,7 +17,7 @@ def update_gitlab_runners(gitlab_api):
                 log.debug(f'Skip {runner}')
                 continue
             elif runner['active']:
-                k = "ci_runner{config='%s'}" % runner['description']
+                k = 'ci_runner{config="%s"}' % runner['description']
                 metrics[k] = 1
         log.debug(f'State was updated to {metrics}')
     except Exception:
