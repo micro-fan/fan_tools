@@ -20,7 +20,7 @@ parser.add_argument(
     default='{}_cache'.format(os.environ.get('CI_PROJECT_NAME', 'default')),
 )
 parser.add_argument(
-    '--temp-name', dest='temp_name', help='temp image name', default=os.environ.get('CI_COMMIT_SHA')
+    '--temp-name', dest='temp_name', help='temp image name', default=os.environ.get('CI_JOB_ID')
 )
 args = parser.parse_args()
 
