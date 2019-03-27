@@ -97,7 +97,10 @@ async def asucc(
     except asyncio.CancelledError:
         if not proc.returncode:
             log.exception('Going to kill process: [{}] {}'.format(proc.pid, cmd))
-            proc.kill()
+            proc.terminate()
+            await asyncio.sleep(0.1)
+            if not proc.returncode:
+                proc.kill()
         return proc.returncode, out, err
 
 

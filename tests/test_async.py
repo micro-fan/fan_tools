@@ -59,4 +59,4 @@ async def test_asucc_kill(event_loop):
     asucc_wait.cancel()
     await asyncio.sleep(0.01)
     resp = await asucc_wait
-    assert resp == (None, [], [])
+    assert resp in ((None, [], []), (-15, [], []))
