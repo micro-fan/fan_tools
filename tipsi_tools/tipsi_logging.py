@@ -63,7 +63,7 @@ def setup_logger(
     base_name,
     root_dir=None,
     enable_json=True,
-    json_formatter='tipsi_tools.logging.JSFormatter',
+    json_formatter='tipsi_tools.tipsi_logging.JSFormatter',
     loggers={},
 ):
     """

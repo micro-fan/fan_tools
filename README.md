@@ -136,7 +136,7 @@ DSN = interpolate_sysenv('postgresql://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{
 ```
 
 
-## tipsi_tools.logging.JSFormatter
+## tipsi_tools.tipsi_logging.JSFormatter
 
 Enable json output with additional fields, suitable for structured logging into ELK or similar solutions.
 
@@ -153,7 +153,7 @@ LOGGING = {
     'disable_existing_loggers': True,
     'formatters': {
         'json': {
-            '()': 'tipsi_tools.logging.JSFormatter',
+            '()': 'tipsi_tools.tipsi_logging.JSFormatter',
             'env_vars': ['HOME'],
         },
         'standard': {
