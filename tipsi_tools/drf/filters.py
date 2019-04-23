@@ -2,7 +2,10 @@ import logging
 from functools import reduce
 
 import django_filters
-from django.db.models import Q
+from django.db.models import Q, F, Value
+
+from tipsi_tools.django.db.pgfields import WordSimilarity
+from tipsi_tools.django.db.utils import set_word_similarity_threshold
 
 
 class EnumFilter(django_filters.CharFilter):
@@ -36,3 +39,21 @@ class EnumFilter(django_filters.CharFilter):
         except Exception:
             logging.exception('Failed to convert value: {} {}'.format(self_name, name))
             return super(EnumFilter, self).filter(qs, None)
+
+
+class TrigramFilterField(django_filters.CharFilter):
+    def __init__(self, *args, **kwargs):
+        self.similarity_threshold = kwargs.pop('similarity_threshold', None)
+        super().__init__(*args, **kwargs)
+
+    def filter(self, qs, value):
+        if value:
+            if self.similarity_threshold:
+                set_word_similarity_threshold(1 - self.similarity_threshold)
+            similarity = WordSimilarity(Value(value), F(self.field_name))
+            qs = (
+                qs.annotate(similarity=similarity)
+                .order_by('similarity', 'pk')
+                .filter(**{f'{self.field_name}__similar': value})
+            )
+        return qs
