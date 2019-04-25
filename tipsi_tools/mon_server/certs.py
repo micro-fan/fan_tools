@@ -12,7 +12,7 @@ log = logging.getLogger('monitoring.certs')
 DAY_LOOP = 24 * 60 * 60
 FMT = '%b %d %H:%M:%S %Y %Z'
 CERT_CMD = (
-    'echo | openssl s_client -connect {}:443 -showcerts 2>/dev/null'  # noqa
+    'echo | openssl s_client -connect {}:443 -servername {} -showcerts 2>/dev/null'  # noqa
     ' | openssl x509 -inform pem -noout -enddate'
 )
 
@@ -23,7 +23,7 @@ CERT_HOSTS = ['gettipsi.com', 'proofnetwork.io']
 async def get_certs_metrics(cert_hosts):
     metrics = {}
     for host in cert_hosts:
-        cmd = CERT_CMD.format(host)
+        cmd = CERT_CMD.format(host, host)
         log.debug(f'Run cmd: {cmd}')
         _code, stdout, stderr = await asucc(cmd)
         resp = stdout[0].split('=')[1]
