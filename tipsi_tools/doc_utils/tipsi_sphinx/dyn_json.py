@@ -1,19 +1,23 @@
+import sys
 from contextlib import suppress
+
+from tipsi_tools.drf.serializers import EnumSerializer
 
 from django.core.exceptions import ImproperlyConfigured
 from django.core.validators import RegexValidator
-from django.db.models import ForeignKey, AutoField, OneToOneField
+from django.db.models import AutoField, ForeignKey, OneToOneField
 from rest_framework import fields
 from rest_framework.fields import ListField
 from rest_framework.serializers import ListSerializer
 from rest_framework_dyn_serializer import DynModelSerializer
 
-from tipsi_tools.drf.serializers import EnumSerializer
-
 try:
     from django.contrib.gis.db.models import MultiPointField
 except ImproperlyConfigured as e:
-    print(f'WARNING: Can not import MultiPointField. Fields with this type will be skipped. ({e})')
+    print(
+        f'WARNING: Can not import MultiPointField. Fields with this type will be skipped. ({e})',
+        file=sys.stderr,
+    )
     MultiPointField = type(None)
 
 
@@ -41,9 +45,7 @@ def fields_model(field):
     return django_types.get(field.model_field.__class__)
 
 
-django_types = {
-    MultiPointField: 'list[(x:float, y:float), ..]',
-}
+django_types = {MultiPointField: 'list[(x:float, y:float), ..]'}
 
 
 primitive_types = {
@@ -143,10 +145,10 @@ def get_type(field, serializer, model_field, model, name):
         }
 
     if issubclass(cls, DynModelSerializer):
-        return {'dyn_field_type': {'ref_name': cls.__name__, }}
+        return {'dyn_field_type': {'ref_name': cls.__name__}}
 
     if issubclass(cls, ListSerializer) and isinstance(field.child, DynModelSerializer):
-        return {'list_field_type': {'ref_name': field.child.__class__.__name__, }}
+        return {'list_field_type': {'ref_name': field.child.__class__.__name__}}
 
     if issubclass(cls, ListField):
         p_type = primitive_type(field.child.__class__, field.child)
@@ -158,9 +160,7 @@ def get_type(field, serializer, model_field, model, name):
         related_field = model_field.target_field
         while isinstance(related_field, OneToOneField):  # Table inheritance
             related_field = related_field.target_field
-        related_types = {
-            AutoField: 'int (related)',
-        }
+        related_types = {AutoField: 'int (related)'}
         if related_field.__class__ in related_types:
             return {'primitive_type': related_types[related_field.__class__]}
 
@@ -172,9 +172,6 @@ def get_type(field, serializer, model_field, model, name):
 
     serializer_doc = field.__doc__
     if model_doc or serializer_doc:
-        return {'doc_type': {
-            'model_doc': model_doc,
-            'serializer_doc': serializer_doc,
-        }}
+        return {'doc_type': {'model_doc': model_doc, 'serializer_doc': serializer_doc}}
 
     return {}
