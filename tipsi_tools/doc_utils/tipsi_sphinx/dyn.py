@@ -10,6 +10,7 @@ from importlib import import_module
 
 from tipsi_tools.doc_utils.tipsi_sphinx.dyn_json import serializer_doc_info
 
+from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework_dyn_serializer import DynModelSerializer
 
 
@@ -73,7 +74,7 @@ class ArtifactWriter:
     def dump(self, data, path):
         f_name = os.path.join(self.doc_root, '{}.json'.format(path))
         with open(f_name, 'w') as f:
-            json.dump(data, f)
+            json.dump(data, f, cls=DjangoJSONEncoder)
 
 
 def container_type():
