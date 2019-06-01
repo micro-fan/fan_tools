@@ -97,8 +97,8 @@ async def asucc(
     except asyncio.CancelledError:
         if not proc.returncode:
             log.exception('Going to kill process: [{}] {}. Children first'.format(proc.pid, cmd))
-            with suppress(AssertionError):
-                await asucc('pkill -9 -P {}'.format(proc.pid), check_stderr=False)
+            asyncio.ensure_future(asucc('pkill -9 -P {}'.format(proc.pid), check_stderr=False),
+                                  loop=loop)
             proc.terminate()
             await asyncio.sleep(0.1)
             if not proc.returncode:
