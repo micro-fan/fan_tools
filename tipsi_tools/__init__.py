@@ -1,3 +1,3 @@
-__version__ = '1.43.2'
+__version__ = '1.44.0'
 
 import tipsi_tools.tipsi_logging as logging  # noqa
