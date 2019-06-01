@@ -7,7 +7,7 @@ import subprocess
 import time
 from asyncio.subprocess import PIPE
 from collections import ChainMap
-from contextlib import closing, contextmanager
+from contextlib import closing, contextmanager, suppress
 
 log = logging.getLogger('tipsi_tools.unix')
 
@@ -96,11 +96,14 @@ async def asucc(
         return code, out, err
     except asyncio.CancelledError:
         if not proc.returncode:
-            log.exception('Going to kill process: [{}] {}'.format(proc.pid, cmd))
+            log.exception('Going to kill process: [{}] {}. Children first'.format(proc.pid, cmd))
+            with suppress(AssertionError):
+                await asucc('pkill -9 -P {}'.format(proc.pid), check_stderr=False)
             proc.terminate()
             await asyncio.sleep(0.1)
             if not proc.returncode:
-                proc.kill()
+                with suppress(ProcessLookupError):
+                    proc.kill()
         return proc.returncode, out, err
 
 
