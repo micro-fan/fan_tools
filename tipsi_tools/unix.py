@@ -98,7 +98,8 @@ async def asucc(
         if not proc.returncode:
             log.exception('Going to kill process: [{}] {}. Children first'.format(proc.pid, cmd))
             await asucc('pkill -9 -P {} || true'.format(proc.pid), check_stderr=False)
-            proc.terminate()
+            with suppress(ProcessLookupError):
+                proc.terminate()
             await asyncio.sleep(0.1)
             if not proc.returncode:
                 with suppress(ProcessLookupError):
