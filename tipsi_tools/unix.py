@@ -104,7 +104,7 @@ async def asucc(
             if not proc.returncode:
                 with suppress(ProcessLookupError):
                     proc.kill()
-        return proc.returncode, out, err
+        raise
 
 
 def check_socket(host, port):
