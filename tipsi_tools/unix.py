@@ -94,17 +94,16 @@ async def asucc(
         if check_stderr:
             assert err == [], 'Error: {} {}'.format(err, code)
         return code, out, err
-    except asyncio.CancelledError:
+    except asyncio.CancelledError as e:
         if not proc.returncode:
             log.exception('Going to kill process: [{}] {}. Children first'.format(proc.pid, cmd))
-            asyncio.ensure_future(asucc('pkill -9 -P {}'.format(proc.pid), check_stderr=False),
-                                  loop=loop)
+            await asucc('pkill -9 -P {} || true'.format(proc.pid), check_stderr=False)
             proc.terminate()
             await asyncio.sleep(0.1)
             if not proc.returncode:
                 with suppress(ProcessLookupError):
                     proc.kill()
-        raise
+        raise e
 
 
 def check_socket(host, port):

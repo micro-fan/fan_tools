@@ -58,5 +58,5 @@ async def test_asucc_kill(event_loop):
     await asyncio.sleep(0.01)
     asucc_wait.cancel()
     await asyncio.sleep(0.01)
-    resp = await asucc_wait
-    assert resp in ((None, [], []), (-15, [], []))
+    with pytest.raises(asyncio.CancelledError):
+        await asucc_wait
