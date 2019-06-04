@@ -2,112 +2,137 @@ from datetime import date
 from unittest import mock
 
 import pytest
-from tipsi_tools.django import call_once_on_commit
-
 from django.db import connection, models, transaction
-from django.test import TestCase
-from rest_framework.test import APIClient
+from rest_framework import status
+from rest_framework.reverse import reverse
+
+from tipsi_tools.django import call_once_on_commit
+from pytest_tipsi_django.client_fixtures import UserWrapper
+
 from sampleapp.models import Article, ArticleType, Author, Review
 
 
-class MainTest(TestCase):
-    def setUp(self):
-        self.client = APIClient()
+@pytest.fixture
+def client(request, module_transaction):
+    with module_transaction(request.fixturename):
+        return UserWrapper(None)
 
-        self.author1 = Author.objects.create(name='author 1', birth_date=date(1985, 1, 31))
 
-        self.author2 = Author.objects.create(name='author 2', birth_date=date(1986, 2, 20))
+@pytest.fixture
+def author1(request, module_transaction):
+    with module_transaction(request.fixturename):
+        yield Author.objects.create(name='author 1', birth_date=date(1985, 1, 31))
 
-        self.articles = []
 
+@pytest.fixture
+def author2(request, module_transaction):
+    with module_transaction(request.fixturename):
+        yield Author.objects.create(name='author 2', birth_date=date(1986, 2, 20))
+
+
+@pytest.fixture
+def articles(request, module_transaction, author1, author2):
+    with module_transaction(request.fixturename):
+        articles = []
         for i in range(5):
             article_type = i % 3 + 1
-            for author in [self.author1, self.author2]:
+            for author in [author1, author2]:
                 article = Article.objects.create(
                     title='article {} by {}'.format(i, author.name),
                     content='article content {}'.format(i),
                     author=author,
                     type=article_type,
                 )
-                self.articles.append(article)
+                articles.append(article)
         Article.objects.create(
             title='null article', content='null content', author=author, type=None
         )
-
-    def test_get_articles_of_review_type(self):
-        url = '/article/'.format(self.articles[0].id)
-        query = 'type=review'
-
-        response = self.client.get('{}?{}'.format(url, query))
-
-        assert response.status_code == 200, response.status_code
-
-        response_json = response.json()
-        expected = len([a for a in response_json if a['type'] == 'review'])
-        assert len(response_json) == expected, response_json
-
-    def test_get_articles_of_ads_and_review_types(self):
-        url = '/article/'.format(self.articles[0].id)
-        query = 'type=ads,review'
-
-        response = self.client.get('{}?{}'.format(url, query))
-
-        assert response.status_code == 200, response.status_code
-
-        response_json = response.json()
-        assert len(response_json) == 6, response_json
-
-    def test_null(self):
-        url = '/article/'.format(self.articles[0].id)
-        query = 'type=null'
-        response = self.client.get('{}?{}'.format(url, query))
-
-        assert response.status_code == 200, response.status_code
-
-        response_json = response.json()
-        assert len(response_json) == 1, response_json
+        yield articles
 
 
-class ReviewTest(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-        self.author = Author.objects.create(name='author 1', birth_date=date(1985, 1, 31))
-        self.article = Article.objects.create(
-            title='article by {}'.format(self.author.name),
-            content='article content',
-            author=self.author,
-            type=ArticleType.article,
-        )
-        self.ads = Article.objects.create(
-            title='ads by {}'.format(self.author.name),
+@pytest.fixture
+def article_ads(request, module_transaction, author1):
+    with module_transaction(request.fixturename):
+        yield Article.objects.create(
+            title='ads by {}'.format(author1.name),
             content='ads content',
-            author=self.author,
+            author=author1,
             type=ArticleType.ads,
         )
 
-        self.reviews = []
-        for a in [self.article, self.ads]:
+
+@pytest.fixture
+def reviews(request, module_transaction, articles, article_ads, author1, author2):
+    with module_transaction(request.fixturename):
+        reviews = []
+        for article in [articles[0], article_ads]:
             for i in range(5):
-                r = Review.objects.create(article=a, summary='summary', content='content', stars=5)
-                self.reviews.append(r)
+                review = Review.objects.create(
+                    article=article,
+                    summary='summary',
+                    content='content',
+                    stars=5,
+                )
+                reviews.append(review)
+        yield reviews
 
-    def test_reviews(self):
-        url = '/review/'
 
-        response = self.client.get('{}?{}'.format(url, ''))
+def test_get_articles_of_review_type(client, articles):
 
-        assert response.status_code == 200, response.status_code
+    response = client.get_json(
+        '{}?{}'.format(
+            reverse('article-list'),
+            'type=review',
+        ),
+        expected=status.HTTP_200_OK,
+    )
+    expected = len([a for a in response if a['type'] == 'review'])
+    assert len(response) == expected, response
 
-        response_json = response.json()
-        assert len(response_json) == 10
 
-    def test_reviews_article_type(self):
-        response = self.client.get('/review/?article_type=ads')
+def test_get_articles_of_ads_and_review_types(client, articles):
 
-        assert response.status_code == 200, response.status_code
+    response = client.get_json(
+        '{}?{}'.format(
+            reverse('article-list'),
+            'type=ads,review',
+        ),
+        expected=status.HTTP_200_OK,
+    )
+    assert len(response) == 6
 
-        response_json = response.json()
-        assert len(response_json) == 5, len(response_json)
+
+def test_null(client, articles):
+
+    response = client.get_json(
+        '{}?{}'.format(
+            reverse('article-list'),
+            'type=null',
+        ),
+        expected=status.HTTP_200_OK,
+        )
+    assert len(response) == 1
+
+
+def test_reviews(client, reviews):
+
+    response = client.get_json(
+        reverse('review-list'),
+        expected=status.HTTP_200_OK,
+    )
+    assert len(response) == 10
+
+
+def test_reviews_article_type(client, reviews):
+
+    response = client.get_json(
+        '{}?{}'.format(
+            reverse('review-list'),
+            'article_type=ads',
+        ),
+        expected=status.HTTP_200_OK,
+    )
+    assert len(response) == 5
 
 
 @pytest.fixture
@@ -137,7 +162,10 @@ def author_signal(author):
 
 
 def test_once_on_commit(author, req_cache, author_signal):
-    with mock.patch('tipsi_tools.django._get_request_unique_cache', side_effect=lambda: req_cache):
+    with mock.patch(
+        'tipsi_tools.django._get_request_unique_cache',
+        side_effect=lambda: req_cache,
+    ):
         with transaction.atomic():
             author.birth_date = date(1986, 1, 31)
             author.save()

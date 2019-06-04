@@ -23,7 +23,7 @@ class AsyncCase(AIOTestCase):
 
 
 @pytest.mark.asyncio
-async def test_asucc():
+async def test_asucc(event_loop):
     ret, out, err = await asucc(
         'echo 1; echo 2 >&2; echo 3 >&2; echo 4; sleep 1', check_stderr=False
     )
@@ -41,7 +41,7 @@ async def test_asucc():
 
 
 @pytest.mark.asyncio
-async def test_asucc_handle_error():
+async def test_asucc_handle_error(event_loop):
     stderr = []
     with pytest.raises(AssertionError):
         await asucc('bash randomcommand', stderr=stderr)

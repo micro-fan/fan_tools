@@ -3,6 +3,8 @@ from enum import IntEnum
 from django.conf import settings
 from django.db import models
 
+from tipsi_tools.django.contrib.postgres.models import LTreeModel
+
 
 class ArticleType(IntEnum):
     article = 1
@@ -32,3 +34,8 @@ class Review(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, null=True, blank=True
     )
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='reviews')
+
+
+class LTreeModelTest(LTreeModel):
+    ltree_defaut_label_field = 'name'
+    name = models.CharField(max_length=255)

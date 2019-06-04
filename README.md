@@ -318,28 +318,30 @@ set_word_similarity_threshold(0.4)
 ```
 
 
-## tipsi_tools.django.db.pgfields.LTreeField
+## tipsi_tools.django.contrib.postgres.models.LTreeModel
 
-Django postgres ltree field type
-
-```
-class LTreeExample(models.Model):
-    path = LTreeField()
-```
-
-
-## tipsi_tools.django.db.pgfields.LTreeDescendant
-
-Lookup for postgres ltree
+Django Model containing postgres ltree
 
 ```
-# Add this import to models.py (file should be imported before lookup usage)
-import tipsi_tools.django.db.pgfields  # noqa
-
-LTreeExample.objects.filter(path__descendant='root.level1')
-
+class LTreeExampleModel(LTreeModel):
 ```
 
+
+## tipsi_tools.django.contrib.postgres.fields.LTreeDescendants
+
+Lookup for postgres ltree descendants
+
+```
+LTreeExampleModel.objects.filter(path__descendants='root.level1')
+```
+
+## tipsi_tools.django.contrib.postgres.fields.LTreeNlevel
+
+Lookup for postgres ltree by level depth
+
+```
+LTreeExampleModel.objects.filter(path__nlevel=2)
+```
 
 ## tipsi_tools.django.db.pgfields.SimilarityLookup
 
@@ -361,6 +363,37 @@ from django.db.models import Value, F
 
 similarity = WordSimilarity(Value('Animal Farm'), F('title'))
 Books.objects.annotate(similarity=similarity)
+```
+
+## tipsi_tools.django_filters.filters.NumberInFilter
+
+Django filter that match if integer is in the integers list separated by comma
+
+```
+class ExampleFilterSet(FilterSet):
+    example_values = NumberInFilter(field_name='example_value', lookup_expr='in')
+```
+
+## tipsi_tools.django.mail.Mail
+
+Send text and html emails using django templates.
+
+```
+Mail(
+    recipient_list=[user.email],
+    template_name='user/emails/reset_password',
+    context={
+        'frontend_url': settings.FRONTEND_URL,
+    },
+).send()
+```
+
+## tipsi_tools.django.url.build_absolute_uri
+
+Get domain section of absolute url of current page using django request object.
+
+```
+build_absolute_uri(request)
 ```
 
 
@@ -386,6 +419,48 @@ def my_api(data):
     print(f'Data: {data["test_int"]} and {data["test_str"]}')
 ```
 
+## tipsi_tools.rest_framework.pagination.ApiPageNumberPagination
+
+Allow turn off pagination by specifying zero page_zize.
+
+```
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'tipsi_tools.rest_framework.pagination.ApiPageNumberPagination',
+    ...
+}
+```
+
+## tipsi_tools.rest_framework.renderers.ApiRenderer
+
+Pretty Django Rest Framework API renderer with error codes.
+
+```
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'tipsi_tools.rest_framework.renderers.ApiRenderer',
+    },
+    ...
+}
+```
+
+## tipsi_tools.rest_framework.handlers.api_exception_handler
+
+Pretty Django Rest Framework API exception handler with error codes.
+
+```
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'tipsi_tools.rest_framework.handlers.api_exception_handler',
+    ...
+}
+```
+
+## tipsi_tools.rest_framework.asserts.assert_validation_error
+
+Helper assert function to be used in tests to match the validation error codes.
+
+```
+assert_validation_error(response, 'email', 'unique')
+```
 
 ## tipsi_tools.aio_utils.DbRecordsProcessorWorker
 
