@@ -365,7 +365,7 @@ similarity = WordSimilarity(Value('Animal Farm'), F('title'))
 Books.objects.annotate(similarity=similarity)
 ```
 
-## tipsi_tools.django_filters.filters.NumberInFilter
+## tipsi_tools.drf.filters.NumberInFilter
 
 Django filter that match if integer is in the integers list separated by comma
 
@@ -419,13 +419,13 @@ def my_api(data):
     print(f'Data: {data["test_int"]} and {data["test_str"]}')
 ```
 
-## tipsi_tools.rest_framework.pagination.ApiPageNumberPagination
+## tipsi_tools.drf.pagination.ApiPageNumberPagination
 
 Allow turn off pagination by specifying zero page_zize.
 
 ```
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'tipsi_tools.rest_framework.pagination.ApiPageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'tipsi_tools.drf.pagination.ApiPageNumberPagination',
     ...
 }
 ```
@@ -437,7 +437,7 @@ Pretty Django Rest Framework API renderer with error codes.
 ```
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
-        'tipsi_tools.rest_framework.renderers.ApiRenderer',
+        'tipsi_tools.drf.renderers.ApiRenderer',
     },
     ...
 }
@@ -449,12 +449,12 @@ Pretty Django Rest Framework API exception handler with error codes.
 
 ```
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'tipsi_tools.rest_framework.handlers.api_exception_handler',
+    'EXCEPTION_HANDLER': 'tipsi_tools.drf.handlers.api_exception_handler',
     ...
 }
 ```
 
-## tipsi_tools.rest_framework.asserts.assert_validation_error
+## tipsi_tools.drf.asserts.assert_validation_error
 
 Helper assert function to be used in tests to match the validation error codes.
 
