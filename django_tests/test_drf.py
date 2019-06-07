@@ -1,5 +1,5 @@
 import pytest
-from tipsi_tools.drf import use_form
+from tipsi_tools.drf.forms import use_form
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError

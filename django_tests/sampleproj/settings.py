@@ -125,3 +125,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Django Rest Framework
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'tipsi_tools.drf.renderers.ApiRenderer',
+    ),
+    'EXCEPTION_HANDLER': 'tipsi_tools.drf.handlers.api_exception_handler',
+    'DEFAULT_PAGINATION_CLASS': 'tipsi_tools.drf.pagination.ApiPageNumberPagination',
+}

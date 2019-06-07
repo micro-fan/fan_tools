@@ -397,7 +397,7 @@ build_absolute_uri(request)
 ```
 
 
-## tipsi_tools.drf.use_form
+## tipsi_tools.drf.forms.use_form
 
 Helps to use power of serializers for simple APIs checks.
 

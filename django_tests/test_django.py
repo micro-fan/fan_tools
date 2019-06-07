@@ -86,8 +86,9 @@ def test_get_articles_of_review_type(client, articles):
         ),
         expected=status.HTTP_200_OK,
     )
-    expected = len([a for a in response if a['type'] == 'review'])
-    assert len(response) == expected, response
+    data = response['data']
+    expected = len([a for a in data if a['type'] == 'review'])
+    assert len(data) == expected, data
 
 
 def test_get_articles_of_ads_and_review_types(client, articles):
@@ -99,7 +100,7 @@ def test_get_articles_of_ads_and_review_types(client, articles):
         ),
         expected=status.HTTP_200_OK,
     )
-    assert len(response) == 6
+    assert len(response['data']) == 6
 
 
 def test_null(client, articles):
@@ -111,7 +112,7 @@ def test_null(client, articles):
         ),
         expected=status.HTTP_200_OK,
         )
-    assert len(response) == 1
+    assert len(response['data']) == 1
 
 
 def test_reviews(client, reviews):
@@ -120,7 +121,7 @@ def test_reviews(client, reviews):
         reverse('review-list'),
         expected=status.HTTP_200_OK,
     )
-    assert len(response) == 10
+    assert len(response['data']) == 10
 
 
 def test_reviews_article_type(client, reviews):
@@ -132,7 +133,7 @@ def test_reviews_article_type(client, reviews):
         ),
         expected=status.HTTP_200_OK,
     )
-    assert len(response) == 5
+    assert len(response['data']) == 5
 
 
 @pytest.fixture
