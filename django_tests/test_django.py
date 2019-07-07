@@ -1,3 +1,4 @@
+import re
 from datetime import date
 from unittest import mock
 
@@ -7,6 +8,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 
 from tipsi_tools.django import call_once_on_commit
+from tipsi_tools.django.models import UploadNameGenerator
 from pytest_tipsi_django.client_fixtures import UserWrapper
 
 from sampleapp.models import Article, ArticleType, Author, Review
@@ -179,3 +181,10 @@ def test_once_on_commit(author, req_cache, author_signal):
             assert call_times == expected_call_times
 
         assert author.birth_date == date(1986, 1, 31)
+
+
+def test_uploadnamegenerator():
+    assert re.match(
+        r'static/imageupload/imageupload-image-.*.jpg',
+        UploadNameGenerator('imageupload', 'image')(None, 'file.jpg'),
+    )
