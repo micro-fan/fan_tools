@@ -36,4 +36,6 @@ def auto_directory(rel_name):
 
 
 def usd_round(amount):
+    if isinstance(amount, str):
+        amount = Decimal(amount)
     return amount.quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
