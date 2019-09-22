@@ -62,7 +62,6 @@ def article_ads(request, module_transaction, author1):
             type=ArticleType.ads,
         )
 
-
 @pytest.fixture
 def reviews(request, module_transaction, articles, article_ads, author1, author2):
     with module_transaction(request.fixturename):
@@ -80,12 +79,9 @@ def reviews(request, module_transaction, articles, article_ads, author1, author2
 
 
 def test_get_articles_of_review_type(client, articles):
-
     response = client.get_json(
-        '{}?{}'.format(
-            reverse('article-list'),
-            'type=review',
-        ),
+        reverse('article-list'),
+        {'type': 'review'},
         expected=status.HTTP_200_OK,
     )
     data = response['data']
@@ -94,31 +90,24 @@ def test_get_articles_of_review_type(client, articles):
 
 
 def test_get_articles_of_ads_and_review_types(client, articles):
-
     response = client.get_json(
-        '{}?{}'.format(
-            reverse('article-list'),
-            'type=ads,review',
-        ),
+        reverse('article-list'),
+        {'type': 'ads,review'},
         expected=status.HTTP_200_OK,
     )
     assert len(response['data']) == 6
 
 
 def test_null(client, articles):
-
     response = client.get_json(
-        '{}?{}'.format(
-            reverse('article-list'),
-            'type=null',
-        ),
+        reverse('article-list'),
+        {'type': 'null'},
         expected=status.HTTP_200_OK,
         )
     assert len(response['data']) == 1
 
 
 def test_reviews(client, reviews):
-
     response = client.get_json(
         reverse('review-list'),
         expected=status.HTTP_200_OK,
@@ -127,15 +116,26 @@ def test_reviews(client, reviews):
 
 
 def test_reviews_article_type(client, reviews):
-
     response = client.get_json(
-        '{}?{}'.format(
-            reverse('review-list'),
-            'article_type=ads',
-        ),
+        reverse('review-list'),
+        {'article_type': 'ads'},
         expected=status.HTTP_200_OK,
     )
+    print(response['data'])
     assert len(response['data']) == 5
+
+
+def test_reviews_article_type_int(client, articles):
+    pk = articles[0].id
+    url = reverse('article-detail', [pk])
+    assert articles[0].type == ArticleType.article
+    data = client.patch_json(
+        url,
+        {'type': str(ArticleType.ads.value), 'title': 'some title'}
+    )['data']
+    print(data)
+    assert data['type'] == ArticleType.ads.name
+
 
 
 @pytest.fixture

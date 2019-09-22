@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, IntEnum
 
 from rest_framework import fields
 
@@ -14,9 +14,12 @@ class EnumSerializer(fields.Field):
         if data is None:
             return None
         try:
-            return getattr(self.enum, data)
-        except TypeError:
+            return self.enum[data]
+        except (KeyError, ValueError):
             try:
+                # isinstance(self.enum, IntEnum) => generates False for IntEnums
+                if IntEnum in self.enum.mro() and isinstance(data, str):
+                    data = int(data)
                 return self.enum(data)
             except ValueError:
                 values = [x.name for x in self.enum]
