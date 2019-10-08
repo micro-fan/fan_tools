@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 from tipsi_tools.testing.aio import AIOTestCase
-from tipsi_tools.unix import asucc
+from tipsi_tools.unix import asucc, ExecError
 
 
 class AsyncCase(AIOTestCase):
@@ -43,9 +43,10 @@ async def test_asucc(event_loop):
 @pytest.mark.asyncio
 async def test_asucc_handle_error(event_loop):
     stderr = []
-    with pytest.raises(AssertionError):
+    with pytest.raises(ExecError) as e:
         await asucc('bash randomcommand', stderr=stderr)
     assert stderr, 'Should have something: {}'.format(stderr)
+    assert e.value.exit_code == 127, e.value
 
 
 async def run_sleep(loop):

@@ -12,6 +12,22 @@ from contextlib import closing, contextmanager, suppress
 log = logging.getLogger('tipsi_tools.unix')
 
 
+class ExecError(Exception):
+    def __init__(self, exit_code, cmd, stdout, stderr):
+        self.exit_code = exit_code
+        self.cmd = cmd
+        self.stdout = stdout
+        self.stderr = stderr
+        super().__init__()
+
+    def __str__(self):
+        return f'Return: {self.exit_code} Command: {self.cmd}\nStderr: {self.stderr}'
+
+    def __repr__(self):
+        desc = str(self).replace('\n', '\t')
+        return f'<ExecException `{desc}`>'
+
+
 def _prepare(out):
     out = out.decode('utf8').strip('\n').split('\n')
     if out == ['']:
@@ -47,9 +63,10 @@ def succ(cmd, check_stderr=True, stdout=None, stderr=None):
     if code != 0:
         for l in out:
             print(l)
-    assert code == 0, 'Return: {} {}\nStderr: {}'.format(code, cmd, err)
-    if check_stderr:
-        assert err == [], 'Error: {} {}'.format(err, code)
+    if code != 0:
+        raise ExecError(code, cmd, out, err)
+    if check_stderr and err != []:
+        raise ExecError(code, cmd, out, err)
     return code, out, err
 
 
@@ -90,9 +107,10 @@ async def asucc(
 
     try:
         code = await proc.wait()
-        assert code == 0, 'Return: {} {}\nStderr: {}'.format(code, cmd, err)
-        if check_stderr:
-            assert err == [], 'Error: {} {}'.format(err, code)
+        if code != 0:
+            raise ExecError(code, cmd, out, err)
+        if check_stderr and err != []:
+            raise ExecError(code, cmd, out, err)
         return code, out, err
     except asyncio.CancelledError as e:
         if not proc.returncode:
