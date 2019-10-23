@@ -79,7 +79,7 @@ async def process_pipe(out, pipe, proc, log_fun):
             log_fun(line)
         if not line and proc.returncode is not None:
             return
-        await asyncio.sleep(0.0001)
+        await asyncio.sleep(0)
 
 
 async def asucc(
