@@ -2,7 +2,7 @@
 import argparse
 import os
 
-from tipsi_tools.unix import succ
+from fan_tools.unix import succ
 
 parser = argparse.ArgumentParser(description='ci script: build, push branches/tags, cache')
 parser.add_argument('-r', '--repo', dest='repo', help='push repo')

@@ -1,8 +1,8 @@
 import asyncio
 
 import pytest
-from tipsi_tools.testing.aio import AIOTestCase
-from tipsi_tools.unix import asucc, ExecError
+from fan_tools.testing.aio import AIOTestCase
+from fan_tools.unix import asucc, ExecError
 
 
 class AsyncCase(AIOTestCase):

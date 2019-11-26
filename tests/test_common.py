@@ -1,6 +1,6 @@
 import pytest
-from tipsi_tools.django.fields import ChoicesEnum
-from tipsi_tools.python import usd_round
+from fan_tools.django.fields import ChoicesEnum
+from fan_tools.python import usd_round
 
 
 @pytest.fixture

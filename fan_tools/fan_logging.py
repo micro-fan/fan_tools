@@ -63,7 +63,7 @@ def setup_logger(
     base_name,
     root_dir=None,
     enable_json=True,
-    json_formatter='tipsi_tools.tipsi_logging.JSFormatter',
+    json_formatter='fan_tools.fan_logging.JSFormatter',
     loggers={},
 ):
     """
@@ -76,7 +76,7 @@ def setup_logger(
 
     JSON_FORMATTER = {
         '()': json_formatter,
-        'env_vars': ['HOST_TYPE', 'TIPSI_CONFIG', 'TIPSI_BRANCH', 'CONTAINER_TYPE'],
+        'env_vars': ['HOST_TYPE', 'DEPLOYMENT_CONFIG', 'DEPLOYMENT_BRANCH', 'CONTAINER_TYPE'],
     }
 
     default_loggers = {

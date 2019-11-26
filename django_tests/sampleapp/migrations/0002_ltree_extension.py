@@ -1,5 +1,5 @@
 from django.db import migrations
-from tipsi_tools.django.contrib.postgres.operations import LTreeExtension
+from fan_tools.django.contrib.postgres.operations import LTreeExtension
 
 
 class Migration(migrations.Migration):

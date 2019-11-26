@@ -6,8 +6,8 @@ from django.db.models import Q, F, Value
 from django_filters import CharFilter
 from django_filters.rest_framework import BaseInFilter, NumberFilter
 
-from tipsi_tools.django.db.pgfields import WordSimilarity
-from tipsi_tools.django.db.utils import set_word_similarity_threshold
+from fan_tools.django.db.pgfields import WordSimilarity
+from fan_tools.django.db.utils import set_word_similarity_threshold
 
 
 class NumberInFilter(BaseInFilter, NumberFilter):

@@ -10,7 +10,7 @@ class UploadNameGenerator(object):
 
     def deconstruct(self):
         return (
-            'tipsi_tools.django.UploadNameGenerator',
+            'fan_tools.django.UploadNameGenerator',
             (),
             {
                 'model_name': self.model_name,

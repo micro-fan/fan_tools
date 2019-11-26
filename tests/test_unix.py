@@ -1,5 +1,5 @@
 import pytest
-from tipsi_tools.unix import succ, ExecError
+from fan_tools.unix import succ, ExecError
 
 
 def test_succ_handle_error():

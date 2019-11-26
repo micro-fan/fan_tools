@@ -1,7 +1,7 @@
 # About this package
 
-[![Build Status](https://travis-ci.org/tipsi/tipsi_tools.svg?branch=master)](https://travis-ci.org/tipsi/tipsi_tools)
-[![PyPi version](https://img.shields.io/pypi/v/tipsi_tools.svg)](https://pypi.python.org/pypi/tipsi_tools)
+[![Build Status](https://travis-ci.org/micro-fan/fan_tools.svg?branch=master)](https://travis-ci.org/micro-fan/fan_tools)
+[![PyPi version](https://img.shields.io/pypi/v/fan_tools.svg)](https://pypi.python.org/pypi/fan_tools)
 
 
 Here are set of internal tools that are shared between different projects internally. Originally most tools related to testing, so they provide some base classes for various cases in testing
@@ -13,7 +13,7 @@ Some might work with other versions, but we're going to be free from all these c
 
 ### ApiUrls
 
-Defined in `tipsi_tools/testing/__init__.py`. Required for defining nested urls with formatting.
+Defined in `fan_tools/testing/__init__.py`. Required for defining nested urls with formatting.
 
 You can use it in fixtures, like:
 
@@ -40,7 +40,7 @@ def test_review_list(user, api):
 
 ### PropsMeta
 
-You can find source in `tipsi_tools/testing/meta.py`.
+You can find source in `fan_tools/testing/meta.py`.
 
 For now it convert methods that are started with `prop__` into descriptors with cache.
 
@@ -109,7 +109,7 @@ class ExampleCase(AIOTestCase):
         await self.assertRaises(ZeroDivisionError, self.async_division)
 ```
 
-## tipsi_tools.unix helpers
+## fan_tools.unix helpers
 
 Basic unix helpers
 
@@ -136,7 +136,7 @@ DSN = interpolate_sysenv('postgresql://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{
 ```
 
 
-## tipsi_tools.tipsi_logging.JSFormatter
+## fan_tools.fan_logging.JSFormatter
 
 Enable json output with additional fields, suitable for structured logging into ELK or similar solutions.
 
@@ -153,7 +153,7 @@ LOGGING = {
     'disable_existing_loggers': True,
     'formatters': {
         'json': {
-            '()': 'tipsi_tools.tipsi_logging.JSFormatter',
+            '()': 'fan_tools.fan_logging.JSFormatter',
             'env_vars': ['HOME'],
         },
         'standard': {
@@ -189,15 +189,15 @@ log.error('test error')
 ```
 
 
-## tipsi_tools.mon_server.MetricsServer
+## fan_tools.mon_server.MetricsServer
 
 Sanic based server that servers metrics in prometheus format.
 
 ```
 from sanic import Sanic
 
-from tipsi_tools.mon_server import MetricsServer
-from tipsi_tools.mon_server.certs import update_certs_loop
+from fan_tools.mon_server import MetricsServer
+from fan_tools.mon_server.certs import update_certs_loop
 
 app = Sanic()
 mserver = MetricsServer(app, status_metric='running{server="localhost"}')
@@ -206,7 +206,7 @@ app.run(host='0.0.0.0', port=8000)
 ```
 
 
-## tipsi_tools.drf.serializers.EnumSerializer
+## fan_tools.drf.serializers.EnumSerializer
 
 Allow you to deserealize incoming strings into `Enum` values.
 You should add `EnumSerializer` into your serializers by hand.
@@ -217,7 +217,7 @@ from enum import IntEnum
 from django.db import models
 from rest_framework import serializers
 
-from tipsi_tools.drf.serializers import EnumSerializer
+from fan_tools.drf.serializers import EnumSerializer
 
 
 class MyEnum(IntEnum):
@@ -239,21 +239,21 @@ Due to `Enum` and `IntegerField` realizations you may use `Enum.value` in querys
 ExampleModel.objects.filter(value=MyEnum.two)
 ```
 
-## tipsi_tools.django.log_requests.LoggerMiddleware
+## fan_tools.django.log_requests.LoggerMiddleware
 
 LoggerMiddleware will log request meta + raw post data into log.
 
-For django<1.10 please use `tipsi_tools.django.log_requests.DeprecatedLoggerMiddleware`
+For django<1.10 please use `fan_tools.django.log_requests.DeprecatedLoggerMiddleware`
 
 
-## tipsi_tools.django.request_uniq
+## fan_tools.django.request_uniq
 
 Decorator adds a unique for each uwsgi request dict as first function
  argument.
 For tests mock `_get_request_unique_cache`
 
 
-## tipsi_tools.django.call_once_on_commit
+## fan_tools.django.call_once_on_commit
 
 Make function called only once on transaction commit. Here is examples
  where function `do_some_useful` will be called only once after
@@ -290,12 +290,12 @@ def immediate_on_commit():
     def side_effect():
         return lambda f: f()
 
-    with mock.patch('tipsi_tools.django.on_commit', side_effect=side_effect) as m:
+    with mock.patch('fan_tools.django.on_commit', side_effect=side_effect) as m:
         yield m
 
 ```
 
-## tipsi_tools.django.fields.ChoicesEnum
+## fan_tools.django.fields.ChoicesEnum
 
 Used for choices attribute for in model field
 
@@ -309,7 +309,7 @@ class ExampleModel(models.Model):
 ```
 
 
-## tipsi_tools.django.db.utils.set_word_similarity_threshold
+## fan_tools.django.db.utils.set_word_similarity_threshold
 
 Allow to set postgres trigram word similarity threshold for default django database connection
 
@@ -318,7 +318,7 @@ set_word_similarity_threshold(0.4)
 ```
 
 
-## tipsi_tools.django.contrib.postgres.models.LTreeModel
+## fan_tools.django.contrib.postgres.models.LTreeModel
 
 Django Model containing postgres ltree
 
@@ -327,7 +327,7 @@ class LTreeExampleModel(LTreeModel):
 ```
 
 
-## tipsi_tools.django.contrib.postgres.fields.LTreeDescendants
+## fan_tools.django.contrib.postgres.fields.LTreeDescendants
 
 Lookup for postgres ltree descendants
 
@@ -335,7 +335,7 @@ Lookup for postgres ltree descendants
 LTreeExampleModel.objects.filter(path__descendants='root.level1')
 ```
 
-## tipsi_tools.django.contrib.postgres.fields.LTreeNlevel
+## fan_tools.django.contrib.postgres.fields.LTreeNlevel
 
 Lookup for postgres ltree by level depth
 
@@ -343,18 +343,18 @@ Lookup for postgres ltree by level depth
 LTreeExampleModel.objects.filter(path__nlevel=2)
 ```
 
-## tipsi_tools.django.db.pgfields.SimilarityLookup
+## fan_tools.django.db.pgfields.SimilarityLookup
 
 Postgres `text %> text` operator
 
 ```
 # Add this import to models.py (file should be imported before lookup usage)
-import tipsi_tools.django.db.pgfields  # noqa
+import fan_tools.django.db.pgfields  # noqa
 
 Books.objects.filter(title__similar='Animal Farm')
 ```
 
-## tipsi_tools.django.db.pgfields.WordSimilarity
+## fan_tools.django.db.pgfields.WordSimilarity
 
 Postgres `text1 <<-> text2` operator. It returns `1 - word_similarity(text1, text2)`
 
@@ -365,7 +365,7 @@ similarity = WordSimilarity(Value('Animal Farm'), F('title'))
 Books.objects.annotate(similarity=similarity)
 ```
 
-## tipsi_tools.drf.filters.NumberInFilter
+## fan_tools.drf.filters.NumberInFilter
 
 Django filter that match if integer is in the integers list separated by comma
 
@@ -374,7 +374,7 @@ class ExampleFilterSet(FilterSet):
     example_values = NumberInFilter(field_name='example_value', lookup_expr='in')
 ```
 
-## tipsi_tools.django.mail.Mail
+## fan_tools.django.mail.Mail
 
 Send text and html emails using django templates.
 
@@ -388,7 +388,7 @@ Mail(
 ).send()
 ```
 
-## tipsi_tools.django.url.build_absolute_uri
+## fan_tools.django.url.build_absolute_uri
 
 Get domain section of absolute url of current page using django request object.
 
@@ -397,7 +397,7 @@ build_absolute_uri(request)
 ```
 
 
-## tipsi_tools.drf.forms.use_form
+## fan_tools.drf.forms.use_form
 
 Helps to use power of serializers for simple APIs checks.
 
@@ -405,7 +405,7 @@ Helps to use power of serializers for simple APIs checks.
 ```python
 from rest_framework import serializers
 from rest_framework.decorators import api_view
-from tipsi_tools.drf import use_form
+from fan_tools.drf import use_form
 
 
 class SimpleForm(serializers.Serializer):
@@ -419,42 +419,42 @@ def my_api(data):
     print(f'Data: {data["test_int"]} and {data["test_str"]}')
 ```
 
-## tipsi_tools.drf.pagination.ApiPageNumberPagination
+## fan_tools.drf.pagination.ApiPageNumberPagination
 
 Allow turn off pagination by specifying zero page_zize.
 
 ```
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'tipsi_tools.drf.pagination.ApiPageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'fan_tools.drf.pagination.ApiPageNumberPagination',
     ...
 }
 ```
 
-## tipsi_tools.rest_framework.renderers.ApiRenderer
+## fan_tools.rest_framework.renderers.ApiRenderer
 
 Pretty Django Rest Framework API renderer with error codes.
 
 ```
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
-        'tipsi_tools.drf.renderers.ApiRenderer',
+        'fan_tools.drf.renderers.ApiRenderer',
     },
     ...
 }
 ```
 
-## tipsi_tools.rest_framework.handlers.api_exception_handler
+## fan_tools.rest_framework.handlers.api_exception_handler
 
 Pretty Django Rest Framework API exception handler with error codes.
 
 ```
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'tipsi_tools.drf.handlers.api_exception_handler',
+    'EXCEPTION_HANDLER': 'fan_tools.drf.handlers.api_exception_handler',
     ...
 }
 ```
 
-## tipsi_tools.drf.asserts.assert_validation_error
+## fan_tools.drf.asserts.assert_validation_error
 
 Helper assert function to be used in tests to match the validation error codes.
 
@@ -462,15 +462,15 @@ Helper assert function to be used in tests to match the validation error codes.
 assert_validation_error(response, 'email', 'unique')
 ```
 
-## tipsi_tools.aio_utils.DbRecordsProcessorWorker
+## fan_tools.aio_utils.DbRecordsProcessorWorker
 
 Asyncio worker which wait for new records in postgres db table and process them.
 
-## tipsi_tools.aio_utils.dict_query/sql_update
+## fan_tools.aio_utils.dict_query/sql_update
 aiopg shortcuts
 
 
-## tipsi_tools.python.execfile
+## fan_tools.python.execfile
 
 Backport of python's 2 `execfile` function.
 
@@ -479,13 +479,13 @@ Usage: execfile('path/to/file.py', globals(), locals())
 Returns: True if file exists and executed, False if file doesn't exist
 
 
-## tipsi_tools.doc_utils.tipsi_sphinx
+## fan_tools.doc_utils.fan_sphinx
 
 Sphinx extensions to generate documentation for django restframework serializers and examples for http requests.
 
 In order to use them specify dependency for package installation:
 ```
-pip install tipsi_tools[doc_utils]
+pip install fan_tools[doc_utils]
 ```
 
 Usage:
@@ -493,21 +493,21 @@ Usage:
 # Add to Sphinx conf.py
 extensions = [
     # ...
-    'tipsi_tools.doc_utils.tipsi_sphinx.dyn_serializer',
-    'tipsi_tools.doc_utils.tipsi_sphinx.http_log'
+    'fan_tools.doc_utils.fan_sphinx.dyn_serializer',
+    'fan_tools.doc_utils.fan_sphinx.http_log'
 ]
 ```
 
 ## Commands
 
-### tipsi_env_yaml
+### fan_env_yaml
 
 Convert template yaml with substituion of `%{ENV_NAME}` strings to appropriate environment variables.
 
-Usage: `tipsi_env_yaml src_file dst_file`
+Usage: `fan_env_yaml src_file dst_file`
 
 
-### tipsi_ci_script
+### fan_ci_script
 
 Helper to run default CI pipeline. Defaults are set up for [giltab defaults](https://docs.gitlab.com/ee/ci/variables/#predefined-variables-environment-variables). Includes stages:
 
@@ -520,22 +520,22 @@ Helper to run default CI pipeline. Defaults are set up for [giltab defaults](htt
 
 It's optimized for parallel launches, so you need to use unique temporary name (`--temp-name`). We want keep our system clean if possible, so we'll delete this tag in the end. But we don't want to repeat basic steps over and over, so we will cache image with common cache name (`--cache-name`), it will remove previous cached image.
 
-### tipsi_wait
+### fan_wait
 
 Wait for socket awailable/not-awailable with timeout.
 
 ```
 # Wait until database port up for 180 seconds
-tipsi_wait -t 180 postgres 5432
+fan_wait -t 180 postgres 5432
 
 # Wait until nginx port down for 30 seconds
-tipsi_wait -t 30 nginx 80
+fan_wait -t 30 nginx 80
 ```
 
 ### run_filebeat
 
 * checks environmental variables `-e KEY=VALUE -e KEY2=VALUE2`
-* converts yaml template `tipsi_env_yaml {TEMPLATE} /tmp/filebeat.yml`
+* converts yaml template `fan_env_yaml {TEMPLATE} /tmp/filebeat.yml`
 * run `/usr/bin/filebeat /tmp/filebeat.yml`
 
 ```

@@ -1,5 +1,5 @@
 import pytest
-from tipsi_tools.testing import ApiUrls
+from fan_tools.testing import ApiUrls
 
 
 @pytest.fixture(scope='session')

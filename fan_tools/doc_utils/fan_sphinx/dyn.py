@@ -8,7 +8,7 @@ import sys
 from functools import partial
 from importlib import import_module
 
-from tipsi_tools.doc_utils.tipsi_sphinx.dyn_json import serializer_doc_info
+from fan_tools.doc_utils.fan_sphinx.dyn_json import serializer_doc_info
 
 from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework_dyn_serializer import DynModelSerializer

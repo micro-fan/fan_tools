@@ -9,7 +9,7 @@ from functools import partial
 
 from sanic import Sanic, response
 
-log = logging.getLogger('tipsi_monitoring')
+log = logging.getLogger('fan_monitoring')
 
 
 class MetricsServer:
@@ -48,7 +48,7 @@ class MetricsServer:
 
 
 def main():
-    from tipsi_tools.mon_server.certs import update_certs_loop
+    from fan_tools.mon_server.certs import update_certs_loop
     app = Sanic()
     mserver = MetricsServer(app)
     mserver.add_task(update_certs_loop, hosts=['gettipsi.com', 'proofnetwork.io'])

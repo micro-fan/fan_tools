@@ -1,7 +1,7 @@
 import sys
 from contextlib import suppress
 
-from tipsi_tools.drf.serializers import EnumSerializer
+from fan_tools.drf.serializers import EnumSerializer
 
 from django.core.exceptions import ImproperlyConfigured
 from django.core.validators import RegexValidator

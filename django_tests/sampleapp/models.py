@@ -3,7 +3,7 @@ from enum import IntEnum
 from django.conf import settings
 from django.db import models
 
-from tipsi_tools.django.contrib.postgres.models import LTreeModel
+from fan_tools.django.contrib.postgres.models import LTreeModel
 
 
 class ArticleType(IntEnum):

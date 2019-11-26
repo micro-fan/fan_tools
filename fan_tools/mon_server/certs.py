@@ -5,7 +5,7 @@ import asyncio
 import logging
 from datetime import datetime
 
-from tipsi_tools.unix import asucc
+from fan_tools.unix import asucc
 
 log = logging.getLogger('monitoring.certs')
 

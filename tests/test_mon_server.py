@@ -1,10 +1,9 @@
-import asyncio
 from unittest.mock import patch
 
 import pytest
 import aiohttp
 
-from tipsi_tools.mon_server import MetricsServer
+from fan_tools.mon_server import MetricsServer
 
 
 pytestmark = pytest.mark.asyncio
@@ -89,4 +88,3 @@ async def test_01(expect_metrics, mhook):
 
     mhook.push_metrics({'b': 1})
     await expect_metrics({'a': 0, 'b': 1, 'running': 1})
-

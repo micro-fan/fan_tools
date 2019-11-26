@@ -1,4 +1,4 @@
-from tipsi_tools.django.url import build_absolute_uri
+from fan_tools.django.url import build_absolute_uri
 
 
 class FakeRequest():

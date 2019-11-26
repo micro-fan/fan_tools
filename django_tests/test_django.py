@@ -7,8 +7,8 @@ from django.db import connection, models, transaction
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from tipsi_tools.django import call_once_on_commit
-from tipsi_tools.django.models import UploadNameGenerator
+from fan_tools.django import call_once_on_commit
+from fan_tools.django.models import UploadNameGenerator
 from pytest_tipsi_django.client_fixtures import UserWrapper
 
 from sampleapp.models import Article, ArticleType, Author, Review
@@ -166,7 +166,7 @@ def author_signal(author):
 
 def test_once_on_commit(author, req_cache, author_signal):
     with mock.patch(
-        'tipsi_tools.django._get_request_unique_cache',
+        'fan_tools.django._get_request_unique_cache',
         side_effect=lambda: req_cache,
     ):
         with transaction.atomic():

@@ -1,5 +1,5 @@
-from tipsi_tools.drf.filters import EnumFilter
-from tipsi_tools.drf.serializers import EnumSerializer
+from fan_tools.drf.filters import EnumFilter
+from fan_tools.drf.serializers import EnumSerializer
 
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend

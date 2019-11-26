@@ -9,7 +9,7 @@ from asyncio.subprocess import PIPE
 from collections import ChainMap
 from contextlib import closing, contextmanager, suppress
 
-log = logging.getLogger('tipsi_tools.unix')
+log = logging.getLogger('fan_tools.unix')
 
 
 class ExecError(Exception):
@@ -47,7 +47,7 @@ def run(command):
     return (out.returncode, _prepare(out.stdout), _prepare(out.stderr))
 
 
-def succ(cmd, check_stderr=True, stdout=None, stderr=None):
+def succ(cmd, check_stderr=False, stdout=None, stderr=None):
     '''
     Alias to run with check return code and stderr
     '''
@@ -83,7 +83,7 @@ async def process_pipe(out, pipe, proc, log_fun):
 
 
 async def asucc(
-    cmd, check_stderr=True, pid_future=None, with_log=True, stdout=None, stderr=None, loop=None
+    cmd, check_stderr=False, pid_future=None, with_log=True, stdout=None, stderr=None, loop=None
 ):
     proc = await asyncio.create_subprocess_shell(
         cmd, stdin=PIPE, stderr=PIPE, stdout=PIPE, loop=loop
@@ -115,7 +115,7 @@ async def asucc(
     except asyncio.CancelledError as e:
         if not proc.returncode:
             log.exception('Going to kill process: [{}] {}. Children first'.format(proc.pid, cmd))
-            await asucc('pkill -9 -P {} || true'.format(proc.pid), check_stderr=False)
+            await asucc('pkill -9 -P {} || true'.format(proc.pid))
             with suppress(ProcessLookupError):
                 proc.terminate()
             await asyncio.sleep(0.1)

@@ -1,4 +1,4 @@
-from tipsi_tools.django.mail import Mail
+from fan_tools.django.mail import Mail
 
 
 def test_mail():

@@ -4,7 +4,7 @@ import logging
 import os
 import time
 
-from tipsi_tools.unix import run
+from fan_tools.unix import run
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(name)s: %(message)s')
 log = logging.getLogger('run_filebeat')
@@ -40,7 +40,7 @@ def main():
     if not os.path.exists(args.yaml_template):
         log.exception('Cannot find file: {}'.format(args.yaml_template))
         exit(1)
-    run('tipsi_env_yaml {} /tmp/filebeat.yml'.format(args.yaml_template))
+    run('fan_env_yaml {} /tmp/filebeat.yml'.format(args.yaml_template))
     log.info('Start filebeat')
     out = run('/usr/bin/filebeat -e -c /tmp/filebeat.yml')  # NOQA
     log.exception('Filebeat exited: {}'.format(out))

@@ -7,7 +7,7 @@ from django.contrib.auth.models import Permission, Group
 from django.contrib.contenttypes.models import ContentType
 from rest_framework.test import APIClient
 
-from tipsi_tools.testing.meta import PropsMeta
+from fan_tools.testing.meta import PropsMeta
 
 
 def get_ids(data, path='id'):
@@ -59,7 +59,7 @@ class BaseTest(TestCase, metaclass=PropsMeta):
         if exists:
             user = exists
         else:
-            user = User.objects.create_user(username, '%s@gettipsi.com' % username, pwd)
+            user = User.objects.create_user(username, '%s@fan.com' % username, pwd)
             for name in groups:
                 group = Group.objects.filter(name=name).first()
                 if not group:

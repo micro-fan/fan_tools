@@ -51,7 +51,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'tipsi_tools.django.log_requests.DeprecatedLoggerMiddleware',
+    'fan_tools.django.log_requests.DeprecatedLoggerMiddleware',
 ]
 
 ROOT_URLCONF = 'sampleproj.urls'
@@ -129,8 +129,8 @@ STATIC_URL = '/static/'
 # Django Rest Framework
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
-        'tipsi_tools.drf.renderers.ApiRenderer',
+        'fan_tools.drf.renderers.ApiRenderer',
     ),
-    'EXCEPTION_HANDLER': 'tipsi_tools.drf.handlers.api_exception_handler',
-    'DEFAULT_PAGINATION_CLASS': 'tipsi_tools.drf.pagination.ApiPageNumberPagination',
+    'EXCEPTION_HANDLER': 'fan_tools.drf.handlers.api_exception_handler',
+    'DEFAULT_PAGINATION_CLASS': 'fan_tools.drf.pagination.ApiPageNumberPagination',
 }

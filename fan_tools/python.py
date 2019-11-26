@@ -2,6 +2,8 @@ import os
 import sys
 from decimal import ROUND_HALF_UP, Decimal
 
+import py
+
 
 def execfile(fname, _globals, _locals):
     """
@@ -16,12 +18,16 @@ def execfile(fname, _globals, _locals):
         return False
 
 
-def rel_path(path, check=True, depth=1):
+def rel_path(path, check=False, depth=1):
     d = os.path.dirname(sys._getframe(depth).f_code.co_filename)
     full = os.path.abspath(os.path.join(d, path))
     if check and not os.path.exists(full):
         raise Exception('No such path: {!r}'.format(full))
     return full
+
+
+def py_rel_path(*args, **kwargs):
+    return py.path.local(rel_path(*args, **kwargs))
 
 
 def auto_directory(rel_name):
