@@ -27,7 +27,7 @@ def rel_path(path, check=False, depth=1):
 
 
 def py_rel_path(*args, **kwargs):
-    return py.path.local(rel_path(*args, **kwargs))
+    return py.path.local(rel_path(*args, depth=2, **kwargs))
 
 
 def auto_directory(rel_name):
