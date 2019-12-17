@@ -33,6 +33,7 @@ setup(
         'aio_utils': ['aiopg', 'psycopg2-binary'],
         'monitoring': [SANIC],
         'gitlab_monitoring': ['python-gitlab==1.0.2', SANIC],
+        'image_utils': ['Pillow'],
     },
     tests_require=['pytest==3.1.3'],
     entry_points={

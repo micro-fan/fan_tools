@@ -558,3 +558,42 @@ optional arguments:
   --rst        Output rst with serializers
   --artifacts  Write serializers artifacts
 ```
+
+
+### image_utils.Transpose
+
+Save rotated by exif tag images. Some browsers/applications don't respect this tag, 
+so it is easier to do that explicitly.
+
+```python
+class Image(models.Model):
+    uploaded_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
+
+    image = models.ImageField(blank=True, upload_to=image_upload_to)
+    thumb_image = models.ImageField(blank=True, upload_to=thumb_upload_to)
+
+    full_url = models.CharField(blank=True, max_length=255)
+    thumb_url = models.CharField(blank=True, max_length=255)
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+class ImageSerializer(ModelSerializer):
+    class Meta:
+        model = Image
+        fields = ['id', 'created', 'updated', 'full_url', 'thumb_url']
+
+class UploadImageView(views.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        image_data = request.data['image']
+        # Fix an image orientation based on exif and remove exif from the resulted image.
+        transformed_image = Transpose().process(image_data)
+        obj = Image.objects.create(uploaded_by=request.user, image=transformed_image)
+        obj.full_url = obj.image.url
+        obj.save()
+
+        s = ImageSerializer(instance=obj)
+        return Response(s.data)
+```
