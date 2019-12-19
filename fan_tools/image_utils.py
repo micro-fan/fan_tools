@@ -8,6 +8,9 @@ from PIL import Image
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 
+class TransposeError(Exception): pass
+
+
 class Transpose:
     """
     Rotates or flips the image.
@@ -53,9 +56,16 @@ class Transpose:
         if args:
             self.methods = args
 
-    def process(self, orig_img):
+    def process_binary(self, binary, format='jpeg', raise_on_open=False):
+        assert type(binary) in (bytes, bytearray), f'Wrong binary type: {type(binary)}'
         try:
-            img = Image.open(orig_img)
+            try:
+                img = Image.open(io.BytesIO(binary))
+            except Exception:
+                if raise_on_open:
+                    raise TransposeError
+                raise
+
             if self.AUTO in self.methods:
                 try:
                     orientation = img._getexif()[0x0112]
@@ -68,13 +78,25 @@ class Transpose:
                 self.log.debug('Operation: {}'.format(method))
                 img = img.transpose(method)
             buf = io.BytesIO()
+            img.save(buf, format=format, quality=100)
+            buf.seek(0)
+            return buf.read()
+        except TransposeError:
+            raise
+        except Exception:
+            self.log.exception('During transpose binary:')
+            return binary
+
+    def process(self, orig_img):
+        try:
             fname = orig_img.name
             fmt = fname.split('.')[-1].upper()
             if fmt.startswith('JP'):
                 fmt = 'JPEG'
-            img.save(buf, format=fmt, quality=100)
+            buf = io.BytesIO(self.process_binary(orig_img.read(), format=fmt))
+            # seek to the end of file
             buf.seek(0, 2)
             out = InMemoryUploadedFile(buf, "image", fname, orig_img.content_type, buf.tell(), None)
             return out
-        except:
+        except Exception:
             return orig_img
