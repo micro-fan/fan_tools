@@ -56,6 +56,12 @@ class Transpose:
         if args:
             self.methods = args
 
+    def rgba_to_rgb(self, img):
+        fill_color = '#ffffff'
+        background = Image.new(img.mode[:-1], img.size, fill_color)
+        background.past(img)
+        return background
+
     def process_binary(self, binary, format='jpeg', raise_on_open=False):
         assert type(binary) in (bytes, bytearray), f'Wrong binary type: {type(binary)}'
         try:
@@ -78,6 +84,8 @@ class Transpose:
                 self.log.debug('Operation: {}'.format(method))
                 img = img.transpose(method)
             buf = io.BytesIO()
+            if img.mode in ('RGBA', 'LA') and format.upper() in ('JPG', 'JPEG'):
+                img = self.rgba_to_rgb(img)
             img.save(buf, format=format, quality=100)
             buf.seek(0)
             return buf.read()
