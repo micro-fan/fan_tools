@@ -62,7 +62,7 @@ class Transpose:
         background.paste(img)
         return background
 
-    def process_binary(self, binary, format='jpg', raise_on_open=False):
+    def process_binary(self, binary, format='jpeg', raise_on_open=False):
         assert type(binary) in (bytes, bytearray), f'Wrong binary type: {type(binary)}'
         try:
             try:
