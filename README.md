@@ -206,6 +206,35 @@ app.run(host='0.0.0.0', port=8000)
 ```
 
 
+## fan_tools.backup
+
+There are two backup helpers: `fan_tools.backup.s3.S3backup` and `fan_tools.backup.gcloud.GCloud`
+
+We're assuming that backup script has access to backup execution and dump directory.
+
+Default setup includes support for docker container that access DB.
+
+By default script provides interface for monitoring (last backup date).
+
+`fan_tools.backup.s3.S3backup` provides external script called `fan_s3_backup` that has accepts some configuration via environmental variables.
+
+* *ENABLE_BACKUP* - you need enable this by setting to non `false` value, default: false
+* *BACKUP_DB_CONTAINER* - container for backup command execution
+* *BACKUP_DB_SCRIPT* - command for exectuion on db server from above. default: `/create_backup.py`
+* *BACKUP_COMMAND* - overrides all above
+*  `-b/--bucket` - to define bucket. default for s3: environmental variable *AWS_BACKUP_BUCKET*
+* *BACKUP_PREFIX* or `-p/--prefix` - directory backup prefix, usually it is subfolder for dumps, default: `backups/`
+* `-d/--daemonize` - should we run in daemonized mode
+* *MONITORING_PORT* - port for listen when run in daemonized mode. default: 80
+
+S3 specific:
+
+* *AWS_BACKUP_KEY*
+* *AWS_BACKUP_SECRET*
+* *AWS_BACKUP_BUCKET*
+
+
+
 ## fan_tools.drf.serializers.EnumSerializer
 
 Allow you to deserealize incoming strings into `Enum` values.

@@ -32,6 +32,8 @@ setup(
         'logging': ['safe-logger>=1.2.1', 'python-json-logger==0.1.7'],
         'aio_utils': ['aiopg', 'psycopg2-binary'],
         'monitoring': [SANIC],
+        's3_backup': ['boto3'],
+        'gcloud_backup': ['google-cloud-storage'],
         'gitlab_monitoring': ['python-gitlab==1.0.2', SANIC],
         'image_utils': ['Pillow'],
     },
@@ -43,6 +45,7 @@ setup(
             'fan_wait=fan_tools.scripts.fan_tools_wait:main',
             'run_filebeat=fan_tools.scripts.run_filebeat:main',
             'doc_serializer=fan_tools.doc_utils.fan_sphinx.dyn:main',
+            'fan_s3_backup=fan_tools.backup.s3:main',
         ]
     },
     classifiers=[
