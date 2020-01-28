@@ -1,5 +1,6 @@
 import logging.config
 import os
+import sys
 
 from pythonjsonlogger.jsonlogger import JsonFormatter
 
@@ -65,6 +66,7 @@ def setup_logger(
     enable_json=True,
     json_formatter='fan_tools.fan_logging.JSFormatter',
     loggers={},
+    enable_stdout=True,
 ):
     """
     json_formatter:
@@ -103,6 +105,15 @@ def setup_logger(
             os.path.join(root_dir, '{}.json_log'.format(base_name)), formatter='json'
         )
         LOGGING['loggers']['']['handlers'].append('json')
+
+    if enable_stdout:
+        LOGGING['handlers']['stdout'] = {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+            'formatter': 'standard',
+        }
+        LOGGING['loggers']['']['handlers'].append('stdout')
     logging.config.dictConfig(LOGGING)
 
 
