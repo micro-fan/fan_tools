@@ -1,5 +1,6 @@
 import logging
 import sys
+from py.path import local
 
 import boto3
 
@@ -17,7 +18,7 @@ class S3Backup(BackupMonitoring):
 
     def get_backups_list(self):
         items = list(self.bucket.objects.filter(Prefix=self.prefix))
-        return [s.key.replace(self.prefix, '') for s in items]
+        return [local(s.key).basename for s in items]
 
     def perform_upload(self, src_name, dst_name):
         self.log.debug('Upload {src_name} => {dst_name}')
