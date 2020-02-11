@@ -56,10 +56,18 @@ class Transpose:
         if args:
             self.methods = args
 
-    def rgba_to_rgb(self, img):
+    def rgba_to_rgb(self, img, mode='jpg'):
         fill_color = '#ffffff'
-        background = Image.new(img.mode[:-1], img.size, fill_color)
-        background.paste(img, mask=img.split()[3])
+        background = Image.new('RGB', img.size, fill_color)
+
+        split = img.split()
+        if img.mode == 'P' and len(split) < 4:
+            split = img.convert('RGBA').split()
+
+        if len(split) == 4:
+            background.paste(img, mask=split[3])
+        else:
+            background.paste(img)
         return background
 
     def process_binary(self, binary, format='jpeg', raise_on_open=False):
