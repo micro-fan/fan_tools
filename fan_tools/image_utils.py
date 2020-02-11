@@ -59,7 +59,7 @@ class Transpose:
     def rgba_to_rgb(self, img):
         fill_color = '#ffffff'
         background = Image.new(img.mode[:-1], img.size, fill_color)
-        background.paste(img)
+        background.paste(img, mask=img.split()[3])
         return background
 
     def process_binary(self, binary, format='jpeg', raise_on_open=False):
