@@ -103,13 +103,14 @@ class Transpose:
             self.log.exception('During transpose binary:')
             return binary
 
-    def process(self, orig_img):
+    def process(self, orig_img, format=None):
         try:
             fname = orig_img.name
-            fmt = fname.split('.')[-1].upper()
-            if fmt.startswith('JP'):
-                fmt = 'JPEG'
-            buf = io.BytesIO(self.process_binary(orig_img.read(), format=fmt))
+            if format is None:
+                format = fname.split('.')[-1].upper()
+                if format.startswith('JP'):
+                    format = 'JPEG'
+            buf = io.BytesIO(self.process_binary(orig_img.read(), format=format))
             # seek to the end of file
             buf.seek(0, 2)
             out = InMemoryUploadedFile(buf, "image", fname, orig_img.content_type, buf.tell(), None)
