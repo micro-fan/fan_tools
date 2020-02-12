@@ -92,7 +92,7 @@ class Transpose:
                 self.log.debug('Operation: {}'.format(method))
                 img = img.transpose(method)
             buf = io.BytesIO()
-            if img.mode in ('RGBA', 'LA') and format.upper() in ('JPG', 'JPEG'):
+            if img.mode in ('RGBA', 'LA', 'P') and format.upper() in ('JPG', 'JPEG'):
                 img = self.rgba_to_rgb(img)
             img.save(buf, format=format, quality=100)
             buf.seek(0)
