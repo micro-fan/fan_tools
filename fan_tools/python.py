@@ -1,8 +1,7 @@
 import os
 import sys
 from decimal import ROUND_HALF_UP, Decimal
-
-import py
+from pathlib import Path
 
 
 def execfile(fname, _globals, _locals):
@@ -27,7 +26,7 @@ def rel_path(path, check=False, depth=1):
 
 
 def py_rel_path(*args, **kwargs):
-    return py.path.local(rel_path(*args, depth=2, **kwargs))
+    return Path(rel_path(*args, depth=2, **kwargs))
 
 
 def auto_directory(rel_name):
