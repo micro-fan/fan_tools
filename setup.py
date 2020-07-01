@@ -22,7 +22,7 @@ setup(
     author_email='cybergrind@gmail.com',
     url='http://github.com/micro-fan/fan_tools',
     keywords=['testing', 'asyncio'],
-    install_requires=['pyyaml>=3.12', 'python-json-logger>=0.1.5', 'py>=1.5'],
+    install_requires=['pyyaml>=3.12', 'python-json-logger>=0.1.5'],
     extras_require={
         'doc_utils': [
             'rest_framework_dyn_serializer>=1.3.*',
