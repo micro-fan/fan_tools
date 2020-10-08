@@ -16,7 +16,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 
 class ArticleFilter(django_filters.FilterSet):
-    type = EnumFilter(ArticleType)
+    type = EnumFilter(ArticleType, raise_on_error=True)
 
     class Meta:
         model = Article
@@ -39,7 +39,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class ReviewFilter(django_filters.FilterSet):
-    article_type = EnumFilter(ArticleType, field_name='article__type')
+    article_type = EnumFilter(ArticleType, field_name='article__type', raise_on_error=True)
 
     class Meta:
         model = Review

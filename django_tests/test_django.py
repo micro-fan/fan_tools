@@ -115,14 +115,30 @@ def test_reviews(client, reviews):
     assert len(response['data']) == 10
 
 
+def test_reviews_empty_filter(client, reviews):
+    response = client.get_json(
+        reverse('review-list'),
+        {'article_type': ''},
+        expected=status.HTTP_200_OK,
+    )
+    assert len(response['data']) == 10
+
+
 def test_reviews_article_type(client, reviews):
     response = client.get_json(
         reverse('review-list'),
         {'article_type': 'ads'},
         expected=status.HTTP_200_OK,
     )
-    print(response['data'])
     assert len(response['data']) == 5
+
+
+def test_reviews_article_type_err(client, reviews):
+    client.get_json(
+        reverse('review-list'),
+        {'article_type': 'ERROR'},
+        expected=400,
+    )
 
 
 def test_reviews_article_type_int(client, articles):

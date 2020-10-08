@@ -53,9 +53,9 @@ class EnumFilter(django_filters.CharFilter):
                         q_objects.append(q)
                     elif n == 'null':
                         q_objects.append(Q(**{'{}__isnull'.format(self_name): True}))
-                    elif self.raise_on_error:
+                    elif n and self.raise_on_error:
                         raise ValidationError(
-                            {self_name: f'Invalid choice={n} Valid: {self._enum.names}'}
+                            {self_name: f'Invalid choice={n!r} Valid: {list(self._enum.__members__.keys())}'}
                         )
             elif name is None:
                 q_objects.append(Q(**{'{}__isnull'.format(self_name): True}))
