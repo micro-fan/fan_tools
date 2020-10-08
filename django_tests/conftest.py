@@ -28,6 +28,8 @@ def create_database():
 
 
 def pytest_configure(config):
+    if config.getoption('docker_skip'):
+        return
     with suppress(Exception):
         print('Stop old container if exists')
         os.system('docker stop testpostgres')
@@ -47,6 +49,8 @@ def pytest_configure(config):
 
 
 def pytest_unconfigure(config):
+    if config.getoption('docker_skip') or config.getoption('keep_db'):
+        return
     os.system('docker stop -t 2 testpostgres')
     os.system('docker rm testpostgres')
 
@@ -54,3 +58,11 @@ def pytest_unconfigure(config):
 @pytest.fixture(autouse=True)
 def autodatabase(module_transaction):
     pass
+
+
+def pytest_addoption(parser):
+    group = parser.getgroup('fan_group')
+    group.addoption('--docker-skip', action='store_true', default=False,
+                    help='skip docker initialization')
+    group.addoption('--keep-db', action='store_true', default=False,
+                    help='skip shutting down db')
