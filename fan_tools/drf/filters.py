@@ -2,9 +2,10 @@ import logging
 from functools import reduce
 
 import django_filters
-from django.db.models import Q, F, Value
+from django.db.models import F, Q, Value
 from django_filters import CharFilter
 from django_filters.rest_framework import BaseInFilter, NumberFilter
+from rest_framework.exceptions import ValidationError
 
 from fan_tools.django.db.pgfields import WordSimilarity
 from fan_tools.django.db.utils import set_word_similarity_threshold
@@ -33,8 +34,9 @@ class TrigramFilter(CharFilter):
 
 
 class EnumFilter(django_filters.CharFilter):
-    def __init__(self, enum, *args, **kwargs):
+    def __init__(self, enum, *args, raise_on_error=False, **kwargs):
         self._enum = enum
+        self.raise_on_error = raise_on_error
         super().__init__(*args, **kwargs)
 
     def filter(self, qs, name):
@@ -51,6 +53,10 @@ class EnumFilter(django_filters.CharFilter):
                         q_objects.append(q)
                     elif n == 'null':
                         q_objects.append(Q(**{'{}__isnull'.format(self_name): True}))
+                    elif self.raise_on_error:
+                        raise ValidationError(
+                            {self_name: f'Invalid choice={n} Valid: {self._enum.names}'}
+                        )
             elif name is None:
                 q_objects.append(Q(**{'{}__isnull'.format(self_name): True}))
             else:
@@ -59,7 +65,8 @@ class EnumFilter(django_filters.CharFilter):
                 return self.get_method(qs)(reduce(lambda q1, q2: q1 | q2, q_objects))
             else:
                 return qs
-
+        except ValidationError:
+            raise
         except Exception:
             logging.exception('Failed to convert value: {} {}'.format(self_name, name))
             return super(EnumFilter, self).filter(qs, None)

@@ -1,10 +1,9 @@
 from unittest.mock import patch
 
-import pytest
 import aiohttp
+import pytest
 
 from fan_tools.mon_server import MetricsServer
-
 
 pytestmark = pytest.mark.asyncio
 
@@ -17,6 +16,7 @@ def server_port(unused_tcp_port_factory):
 @pytest.fixture
 def sanic_app():
     from sanic import Sanic
+
     yield Sanic()
 
 
@@ -51,7 +51,9 @@ def patch_loop(event_loop):
 
 @pytest.fixture
 async def running_server(sanic_app, mserver, server_port, patch_loop, event_loop):
-    running_server = sanic_app.create_server(host='localhost', port=server_port)
+    running_server = sanic_app.create_server(
+        host='localhost', port=server_port, return_asyncio_server=True
+    )
     yield await running_server
     running_server.close()
 
@@ -59,10 +61,12 @@ async def running_server(sanic_app, mserver, server_port, patch_loop, event_loop
 @pytest.fixture
 async def get_metrics(running_server, server_port):
     async with aiohttp.ClientSession() as cli:
+
         async def async_get():
             resp = await cli.get(f'http://localhost:{server_port}/metrics')
             assert resp.status == 200
             return await resp.text()
+
         yield async_get
 
 
@@ -77,6 +81,7 @@ def expect_metrics(get_metrics):
             k, v = l.split(' ')
             resp_dict[k] = int(v)
         assert resp_dict == expected_metrics
+
     yield inner_expect
 
 

@@ -27,7 +27,7 @@ setup(
         'doc_utils': [
             'rest_framework_dyn_serializer>=1.3.*',
             'docutils',
-            'djangorestframework==3.7.*',
+            'djangorestframework==3.12.*',
         ],
         'logging': ['safe-logger>=1.2.1', 'python-json-logger==0.1.7'],
         'aio_utils': ['aiopg', 'psycopg2-binary'],

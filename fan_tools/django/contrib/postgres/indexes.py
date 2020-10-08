@@ -3,7 +3,7 @@ from django.db.models import Index
 
 class LTreeIndex(Index):
 
-    def create_sql(self, model, schema_editor, using=''):
+    def create_sql(self, model, schema_editor, using='', **kwargs):
         """
         Update ltree label path when parent/child relationships changed
         Taken from: https://github.com/peopledoc/django-ltree-demo
