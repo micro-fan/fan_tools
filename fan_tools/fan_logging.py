@@ -67,6 +67,7 @@ def setup_logger(
     json_formatter='fan_tools.fan_logging.JSFormatter',
     loggers={},
     enable_stdout=True,
+    stdout_level='DEBUG',
 ):
     """
     json_formatter:
@@ -108,7 +109,7 @@ def setup_logger(
 
     if enable_stdout:
         LOGGING['handlers']['stdout'] = {
-            'level': 'DEBUG',
+            'level': stdout_level,
             'class': 'logging.StreamHandler',
             'stream': sys.stdout,
             'formatter': 'standard',

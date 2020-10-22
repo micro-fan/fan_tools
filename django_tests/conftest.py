@@ -30,6 +30,7 @@ def create_database():
 def pytest_configure(config):
     if config.getoption('docker_skip'):
         return
+
     with suppress(Exception):
         print('Stop old container if exists')
         os.system('docker stop testpostgres')
