@@ -1,7 +1,9 @@
 import os
 import sys
+import zipfile
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
+from typing import BinaryIO, List, Union
 
 
 def execfile(fname, _globals, _locals):
@@ -44,3 +46,26 @@ def usd_round(amount):
     if isinstance(amount, str):
         amount = Decimal(amount)
     return amount.quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
+
+
+def root_directory(target: Union[Path, BinaryIO], exclude: List[str] = None) -> Path:
+    exclude = exclude or []
+    if isinstance(target, Path):
+        files = [f for f in target.glob('**/*') if f.is_file()]
+    elif hasattr(target, 'read'):
+        with zipfile.ZipFile(target, 'r') as zip_ref:
+            files = [
+                Path(zip_item.filename) for zip_item in zip_ref.infolist() if not zip_item.is_dir()
+            ]
+    else:
+        raise Exception('Unsupported target object')
+    paths = [f for f in files if not any(filter(lambda i: i in str(f), exclude))]
+    if len(paths) > 1:
+        prefix = os.path.commonpath(paths)
+        prefix = '' if prefix == '/' else prefix
+        root = Path(prefix)
+    elif paths:
+        root = paths[0].parent
+    else:
+        root = Path('')
+    return root
