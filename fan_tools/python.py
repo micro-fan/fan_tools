@@ -49,6 +49,7 @@ def usd_round(amount):
 
 
 def root_directory(target: Union[Path, BinaryIO], exclude: List[str] = None) -> Path:
+    """Returns the folder that contains the files."""
     exclude = exclude or []
     if isinstance(target, Path):
         files = [f for f in target.glob('**/*') if f.is_file()]
