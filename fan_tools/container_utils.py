@@ -1,7 +1,7 @@
 import asyncio
 import pathlib
 import shutil
-from typing import List
+from typing import List, Union
 
 from starlette.background import BackgroundTask
 from starlette.requests import Request
@@ -95,14 +95,24 @@ metric_storage = {}
 
 
 class MetricStorage:
-    def increment(self, metric_name: str):
+    def increment(self, metric_name: str) -> int:
         if metric_name not in metric_storage:
             metric_storage[metric_name] = 0
+        if not isinstance(metric_storage[metric_name], int):
+            raise ValueError('Metric not support incrementing')
         metric_storage[metric_name] += 1
         return metric_storage[metric_name]
 
     def get_metrics(self):
         return metric_storage
+
+    def push(self, metric_name: str, value: Union[str, int, float]) -> Union[str, int, float]:
+        if metric_name not in metric_storage:
+            metric_storage[metric_name] = []
+        if not isinstance(metric_storage[metric_name], list):
+            raise ValueError('Metric not support pushing')
+        metric_storage[metric_name].append(value)
+        return metric_storage[metric_name]
 
     def reset(self):
         metric_storage.clear()
