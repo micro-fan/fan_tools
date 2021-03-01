@@ -88,7 +88,7 @@ class HealthView(BaseMetricsView):
 
 class PrometheusView(BaseMetricsView):
     async def get_default(self):
-        return ["running 1"]
+        return ["up 1"]
 
 
 metric_storage = {}

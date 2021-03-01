@@ -41,9 +41,9 @@ class TestPrometheus:
     def test_default(self):
         response = client.get('/prometheus/')
         assert response.status_code == 200
-        assert response.content == b'running 1'
+        assert response.content == b'up 1'
 
     def test_extra(self):
         response = client.get('/prometheus_extra/')
         assert response.status_code == 200
-        assert response.content == b'running 1\ntest 1'
+        assert response.content == b'up 1\ntest 1'
