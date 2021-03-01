@@ -1,9 +1,10 @@
+import itertools
 import os
 import sys
 import zipfile
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
-from typing import BinaryIO, List, Union
+from typing import Any, BinaryIO, Dict, List, Union
 
 
 def execfile(fname, _globals, _locals):
@@ -70,3 +71,47 @@ def root_directory(target: Union[Path, BinaryIO], exclude: List[str] = None) -> 
     else:
         root = Path('')
     return root
+
+
+def dict_contains(superset, subset):
+    """
+    partial comparison dictionaries
+
+    $ dict_contains({'a': 1, 'b': 2}, {'a': 1}) # => True
+    $ dict_contains({'a': 1, 'b': 2}, {'b': 1}) # => True
+    $ dict_contains({'a': 1, 'b': 2}, {'c': 3}) # => False
+    $ dict_contains({'a': 1, 'b': 2}, {'b': 2}) # => False
+    """
+
+    for k, v in subset.items():
+        if k not in superset:
+            return False
+        if isinstance(v, dict):
+            if not dict_contains(superset[k], subset[k]):
+                return False
+        else:
+            if v != superset[k]:
+                return False
+    return True
+
+
+def slide(iterable, size=2):
+    return itertools.zip_longest(*[itertools.islice(iterable, i, sys.maxsize) for i in range(size)])
+
+
+def expand_dot(pattern: Dict[str, Any]):
+    """
+    {'a.b.c': 1} => {'a':{'b':{'c': 1}}}
+    """
+    out = {}
+    for k, v in pattern.items():
+        if '.' in k:
+            curr = out
+            for sub_k, has_next in slide(k.split('.')):
+                if has_next:
+                    curr = curr.setdefault(sub_k, {})
+                else:
+                    curr[sub_k] = v
+        else:
+            out[k] = v
+    return out
