@@ -40,6 +40,10 @@ def instrument_logging(**kwargs):
             if ctx != INVALID_SPAN_CONTEXT:
                 record.otelSpanID = format(ctx.span_id, "016x")
                 record.otelTraceID = format(ctx.trace_id, "032x")
+
+                # datadog requires conversion
+                record.__dict__['dd.span_id'] = str(ctx.span_id)
+                record.__dict__['dd.trace_id'] = str(ctx.trace_id & 0xFFFFFFFFFFFFFFFF)
         return record
 
     logging.setLogRecordFactory(record_factory)
