@@ -26,7 +26,7 @@ Usage:
 
 """
 
-class SysLogHandler(Handler):
+class SysLogHandler(logging.Handler):
     """
     A handler class which sends formatted logging records to a syslog
     server. Based on Sam Rushing's syslog module:
@@ -45,98 +45,99 @@ class SysLogHandler(Handler):
     #
     # priorities (these are ordered)
 
-    LOG_EMERG = 0  #  system is unusable
-    LOG_ALERT = 1  #  action must be taken immediately
-    LOG_CRIT = 2  #  critical conditions
-    LOG_ERR = 3  #  error conditions
-    LOG_WARNING = 4  #  warning conditions
-    LOG_NOTICE = 5  #  normal but significant condition
-    LOG_INFO = 6  #  informational
-    LOG_DEBUG = 7  #  debug-level messages
+    LOG_EMERG     = 0       #  system is unusable
+    LOG_ALERT     = 1       #  action must be taken immediately
+    LOG_CRIT      = 2       #  critical conditions
+    LOG_ERR       = 3       #  error conditions
+    LOG_WARNING   = 4       #  warning conditions
+    LOG_NOTICE    = 5       #  normal but significant condition
+    LOG_INFO      = 6       #  informational
+    LOG_DEBUG     = 7       #  debug-level messages
 
     #  facility codes
-    LOG_KERN = 0  #  kernel messages
-    LOG_USER = 1  #  random user-level messages
-    LOG_MAIL = 2  #  mail system
-    LOG_DAEMON = 3  #  system daemons
-    LOG_AUTH = 4  #  security/authorization messages
-    LOG_SYSLOG = 5  #  messages generated internally by syslogd
-    LOG_LPR = 6  #  line printer subsystem
-    LOG_NEWS = 7  #  network news subsystem
-    LOG_UUCP = 8  #  UUCP subsystem
-    LOG_CRON = 9  #  clock daemon
-    LOG_AUTHPRIV = 10  #  security/authorization messages (private)
-    LOG_FTP = 11  #  FTP daemon
-    LOG_NTP = 12  #  NTP subsystem
-    LOG_SECURITY = 13  #  Log audit
-    LOG_CONSOLE = 14  #  Log alert
-    LOG_SOLCRON = 15  #  Scheduling daemon (Solaris)
+    LOG_KERN      = 0       #  kernel messages
+    LOG_USER      = 1       #  random user-level messages
+    LOG_MAIL      = 2       #  mail system
+    LOG_DAEMON    = 3       #  system daemons
+    LOG_AUTH      = 4       #  security/authorization messages
+    LOG_SYSLOG    = 5       #  messages generated internally by syslogd
+    LOG_LPR       = 6       #  line printer subsystem
+    LOG_NEWS      = 7       #  network news subsystem
+    LOG_UUCP      = 8       #  UUCP subsystem
+    LOG_CRON      = 9       #  clock daemon
+    LOG_AUTHPRIV  = 10      #  security/authorization messages (private)
+    LOG_FTP       = 11      #  FTP daemon
+    LOG_NTP       = 12      #  NTP subsystem
+    LOG_SECURITY  = 13      #  Log audit
+    LOG_CONSOLE   = 14      #  Log alert
+    LOG_SOLCRON   = 15      #  Scheduling daemon (Solaris)
 
     #  other codes through 15 reserved for system use
-    LOG_LOCAL0 = 16  #  reserved for local use
-    LOG_LOCAL1 = 17  #  reserved for local use
-    LOG_LOCAL2 = 18  #  reserved for local use
-    LOG_LOCAL3 = 19  #  reserved for local use
-    LOG_LOCAL4 = 20  #  reserved for local use
-    LOG_LOCAL5 = 21  #  reserved for local use
-    LOG_LOCAL6 = 22  #  reserved for local use
-    LOG_LOCAL7 = 23  #  reserved for local use
+    LOG_LOCAL0    = 16      #  reserved for local use
+    LOG_LOCAL1    = 17      #  reserved for local use
+    LOG_LOCAL2    = 18      #  reserved for local use
+    LOG_LOCAL3    = 19      #  reserved for local use
+    LOG_LOCAL4    = 20      #  reserved for local use
+    LOG_LOCAL5    = 21      #  reserved for local use
+    LOG_LOCAL6    = 22      #  reserved for local use
+    LOG_LOCAL7    = 23      #  reserved for local use
 
     priority_names = {
-        "alert": LOG_ALERT,
-        "crit": LOG_CRIT,
+        "alert":    LOG_ALERT,
+        "crit":     LOG_CRIT,
         "critical": LOG_CRIT,
-        "debug": LOG_DEBUG,
-        "emerg": LOG_EMERG,
-        "err": LOG_ERR,
-        "error": LOG_ERR,  #  DEPRECATED
-        "info": LOG_INFO,
-        "notice": LOG_NOTICE,
-        "panic": LOG_EMERG,  #  DEPRECATED
-        "warn": LOG_WARNING,  #  DEPRECATED
-        "warning": LOG_WARNING,
-    }
+        "debug":    LOG_DEBUG,
+        "emerg":    LOG_EMERG,
+        "err":      LOG_ERR,
+        "error":    LOG_ERR,        #  DEPRECATED
+        "info":     LOG_INFO,
+        "notice":   LOG_NOTICE,
+        "panic":    LOG_EMERG,      #  DEPRECATED
+        "warn":     LOG_WARNING,    #  DEPRECATED
+        "warning":  LOG_WARNING,
+        }
 
     facility_names = {
-        "auth": LOG_AUTH,
-        "authpriv": LOG_AUTHPRIV,
-        "console": LOG_CONSOLE,
-        "cron": LOG_CRON,
-        "daemon": LOG_DAEMON,
-        "ftp": LOG_FTP,
-        "kern": LOG_KERN,
-        "lpr": LOG_LPR,
-        "mail": LOG_MAIL,
-        "news": LOG_NEWS,
-        "ntp": LOG_NTP,
-        "security": LOG_SECURITY,
+        "auth":         LOG_AUTH,
+        "authpriv":     LOG_AUTHPRIV,
+        "console":      LOG_CONSOLE,
+        "cron":         LOG_CRON,
+        "daemon":       LOG_DAEMON,
+        "ftp":          LOG_FTP,
+        "kern":         LOG_KERN,
+        "lpr":          LOG_LPR,
+        "mail":         LOG_MAIL,
+        "news":         LOG_NEWS,
+        "ntp":          LOG_NTP,
+        "security":     LOG_SECURITY,
         "solaris-cron": LOG_SOLCRON,
-        "syslog": LOG_SYSLOG,
-        "user": LOG_USER,
-        "uucp": LOG_UUCP,
-        "local0": LOG_LOCAL0,
-        "local1": LOG_LOCAL1,
-        "local2": LOG_LOCAL2,
-        "local3": LOG_LOCAL3,
-        "local4": LOG_LOCAL4,
-        "local5": LOG_LOCAL5,
-        "local6": LOG_LOCAL6,
-        "local7": LOG_LOCAL7,
-    }
+        "syslog":       LOG_SYSLOG,
+        "user":         LOG_USER,
+        "uucp":         LOG_UUCP,
+        "local0":       LOG_LOCAL0,
+        "local1":       LOG_LOCAL1,
+        "local2":       LOG_LOCAL2,
+        "local3":       LOG_LOCAL3,
+        "local4":       LOG_LOCAL4,
+        "local5":       LOG_LOCAL5,
+        "local6":       LOG_LOCAL6,
+        "local7":       LOG_LOCAL7,
+        }
 
-    # The map below appears to be trivially lowercasing the key. However,
-    # there's more to it than meets the eye - in some locales, lowercasing
-    # gives unexpected results. See SF #1524081: in the Turkish locale,
-    # "INFO".lower() != "info"
+    #The map below appears to be trivially lowercasing the key. However,
+    #there's more to it than meets the eye - in some locales, lowercasing
+    #gives unexpected results. See SF #1524081: in the Turkish locale,
+    #"INFO".lower() != "info"
     priority_map = {
-        "DEBUG": "debug",
-        "INFO": "info",
-        "WARNING": "warning",
-        "ERROR": "error",
-        "CRITICAL": "critical",
+        "DEBUG" : "debug",
+        "INFO" : "info",
+        "WARNING" : "warning",
+        "ERROR" : "error",
+        "CRITICAL" : "critical"
     }
 
-    def __init__(self, address=('localhost', SYSLOG_UDP_PORT), facility=LOG_USER, socktype=None):
+    def __init__(self, address=('localhost', SYSLOG_UDP_PORT),
+                 facility=LOG_USER, socktype=None):
         """
         Initialize a handler.
 
@@ -238,9 +239,11 @@ class SysLogHandler(Handler):
         """
         self.acquire()
         try:
-            self.socket.close()
+            sock = self.socket
+            if sock:
+                self.socket = None
+                sock.close()
             logging.Handler.close(self)
-            self.socket = None
         finally:
             self.release()
 
@@ -254,8 +257,8 @@ class SysLogHandler(Handler):
         """
         return self.priority_map.get(levelName, "warning")
 
-    ident = ''  # prepended to all messages
-    append_nul = True  # some old syslog daemons expect a NUL terminator
+    ident = ''          # prepended to all messages
+    append_nul = True   # some old syslog daemons expect a NUL terminator
 
     def emit(self, record):
         """
@@ -273,7 +276,8 @@ class SysLogHandler(Handler):
 
             # We need to convert record level to lowercase, maybe this will
             # change in the future.
-            prio = '<%d>' % self.encodePriority(self.facility, self.mapPriority(record.levelname))
+            prio = '<%d>' % self.encodePriority(self.facility,
+                                                self.mapPriority(record.levelname))
             prio = prio.encode('utf-8')
             # Message is a string. Convert to bytes as required by RFC 5424
             msg = msg.encode('utf-8')
