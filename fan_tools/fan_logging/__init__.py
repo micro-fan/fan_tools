@@ -68,6 +68,7 @@ def setup_logger(
     loggers={},
     enable_stdout=True,
     stdout_level='DEBUG',
+    handlers={},
 ):
     """
     json_formatter:
@@ -106,6 +107,11 @@ def setup_logger(
             os.path.join(root_dir, '{}.json_log'.format(base_name)), formatter='json'
         )
         LOGGING['loggers']['']['handlers'].append('json')
+
+    if handlers:
+        LOGGING['handlers'].update(handlers)
+        for handler_name in handlers:
+            LOGGING['loggers']['']['handlers'].append(handler_name)
 
     if enable_stdout:
         LOGGING['handlers']['stdout'] = {
