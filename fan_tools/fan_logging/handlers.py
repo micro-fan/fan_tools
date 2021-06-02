@@ -154,6 +154,7 @@ class SysLogHandler(logging.Handler):
         self.address = address
         self.facility = facility
         self.socktype = socktype
+        self.socket = None
         self.createSocket()
 
     def _connect_unixsocket(self, address):
