@@ -44,6 +44,10 @@ def instrument_logging(**kwargs):
                 # datadog requires conversion
                 record.__dict__['dd.span_id'] = str(ctx.span_id)
                 record.__dict__['dd.trace_id'] = str(ctx.trace_id & 0xFFFFFFFFFFFFFFFF)
+
+                # newrelic requires custom names
+                record.__dict__['span.id'] = record.otelSpanID
+                record.__dict__['trace.id'] = record.otelTraceID
         return record
 
     logging.setLogRecordFactory(record_factory)
