@@ -69,6 +69,7 @@ def setup_logger(
     enable_stdout=True,
     stdout_level='DEBUG',
     handlers={},
+    json_params={}
 ):
     """
     json_formatter:
@@ -81,6 +82,7 @@ def setup_logger(
     JSON_FORMATTER = {
         '()': json_formatter,
         'env_vars': ['HOST_TYPE', 'DEPLOYMENT_CONFIG', 'DEPLOYMENT_BRANCH', 'CONTAINER_TYPE'],
+        **json_params,
     }
 
     default_loggers = {
