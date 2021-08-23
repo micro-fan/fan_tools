@@ -1,4 +1,4 @@
-from django.conf.urls import url, include
+from django.conf.urls import re_path, include
 
 from rest_framework.routers import DefaultRouter
 from .views import ArticleViewSet, ReviewViewSet
@@ -8,5 +8,5 @@ router.register('article', ArticleViewSet)
 router.register('review', ReviewViewSet)
 
 urlpatterns = [
-    url(r'^', include(router.urls)),
+    re_path(r'^', include(router.urls)),
 ]

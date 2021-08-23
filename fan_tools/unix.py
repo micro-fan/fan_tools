@@ -8,28 +8,34 @@ import time
 from asyncio.subprocess import PIPE
 from collections import ChainMap
 from contextlib import closing, contextmanager, suppress
+from pathlib import Path
+from typing import Callable, List, Optional, TypeVar, Union
+
 
 log = logging.getLogger('fan_tools.unix')
 
+Cmd = Union[str, List[str]]
+Out = List[str]
+
 
 class ExecError(Exception):
-    def __init__(self, exit_code, cmd, stdout, stderr):
+    def __init__(self, exit_code: int, cmd: Cmd, stdout: Out, stderr: Out):
         self.exit_code = exit_code
         self.cmd = cmd
         self.stdout = stdout
         self.stderr = stderr
         super().__init__()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'Return: {self.exit_code} Command: {self.cmd}\nStderr: {self.stderr}'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         desc = str(self).replace('\n', '\t')
         return f'<ExecException `{desc}`>'
 
 
-def _prepare(out):
-    out = out.decode('utf8').strip('\n').split('\n')
+def _prepare(out: str) -> Out:
+    out: Out = out.decode('utf8').strip('\n').split('\n')
     if out == ['']:
         return []
     return out
@@ -125,7 +131,7 @@ async def asucc(
         raise e
 
 
-def check_socket(host, port):
+def check_socket(host: str, port: int) -> bool:
     with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
         sock.settimeout(10)
         try:
@@ -137,7 +143,10 @@ def check_socket(host, port):
             return False
 
 
-def wait_result(func, result, timeout):
+T = TypeVar('T')
+
+
+def wait_result(func: Callable, result: Optional[T], timeout) -> bool:
     t = time.time()
     while True:
         res = func()
@@ -150,18 +159,18 @@ def wait_result(func, result, timeout):
             return False
 
 
-def wait_socket(host, port, timeout=120):
+def wait_socket(host: str, port: int, timeout=120) -> bool:
     '''
     Wait for socket opened on remote side. Return False after timeout
     '''
     return wait_result(lambda: check_socket(host, port), True, timeout)
 
 
-def wait_no_socket(host, port, timeout=120):
+def wait_no_socket(host: str, port: int, timeout=120) -> bool:
     return wait_result(lambda: check_socket(host, port), False, timeout)
 
 
-def interpolate_sysenv(line, defaults={}):
+def interpolate_sysenv(line: str, defaults={}) -> str:
     '''
     Format line system environment variables + defaults
     '''
@@ -169,12 +178,12 @@ def interpolate_sysenv(line, defaults={}):
     return line.format(**map)
 
 
-def source(fname):
+def source(fname: str):
     '''
     Acts similar to bash 'source' or '.' commands.
     '''
     rex = re.compile('(?:export |declare -x )?(.*?)="(.*?)"')
-    out = call_out('source {} && export'.format(fname))
+    out = succ('source {} && export'.format(fname))[1]
     out = [x for x in out if 'export' in x or 'declare' in x]
     out = {k: v for k, v in [rex.match(x).groups() for x in out if rex.match(x)]}
     for k, v in out.items():
@@ -182,7 +191,7 @@ def source(fname):
 
 
 @contextmanager
-def cd(dir_name):
+def cd(dir_name: Union[str, Path]):
     """
     do something in other directory and return back after block ended
     """

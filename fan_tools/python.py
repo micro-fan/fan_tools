@@ -1,13 +1,14 @@
 import itertools
 import os
 import sys
+import warnings
 import zipfile
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
-from typing import Any, BinaryIO, Dict, List, Union
+from typing import Any, BinaryIO, Dict, Iterable, List, Optional, Union
 
 
-def execfile(fname, _globals, _locals):
+def execfile(fname: Union[str, Path], _globals: Dict[str, Any], _locals: Dict[str, Any]):
     """
     Usage: execfile('path/to/file.py', globals(), locals())
     """
@@ -20,36 +21,40 @@ def execfile(fname, _globals, _locals):
         return False
 
 
-def rel_path(path, check=False, depth=1):
-    d = os.path.dirname(sys._getframe(depth).f_code.co_filename)
-    full = os.path.abspath(os.path.join(d, path))
-    if check and not os.path.exists(full):
+def rel_path(path: str, check=False, depth=1) -> Path:
+    d = Path(sys._getframe(depth).f_code.co_filename).parent
+    full = (d / path).resolve()
+    if check and not full.exists():
         raise Exception('No such path: {!r}'.format(full))
     return full
 
 
 def py_rel_path(*args, **kwargs):
-    return Path(rel_path(*args, depth=2, **kwargs))
+    message = 'Use `rel_path` function instead'
+    warnings.warn(message, DeprecationWarning, stacklevel=2)
+    return rel_path(*args, depth=2, **kwargs)
 
 
-def auto_directory(rel_name):
+def auto_directory(path: Union[str, Path]) -> Path:
     """
     if you're using py.path you make do that as:
     py.path.local(full_path).ensure_dir()
     """
-    dir_name = rel_path(rel_name, check=False)
-    if not os.path.exists(dir_name):
-        os.makedirs(dir_name, exist_ok=True)
-    return dir_name
+    if isinstance(path, str):
+        dir_path = rel_path(path)
+    else:
+        dir_path = path
+    dir_path.mkdir(exist_ok=True)
+    return dir_path
 
 
-def usd_round(amount):
+def usd_round(amount: Union[str, Decimal]) -> Decimal:
     if isinstance(amount, str):
         amount = Decimal(amount)
     return amount.quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
 
 
-def root_directory(target: Union[Path, BinaryIO], exclude: List[str] = None) -> Path:
+def root_directory(target: Union[Path, BinaryIO], exclude: Optional[List[str]] = None) -> Path:
     """Returns the folder that contains the files."""
     exclude = exclude or []
     if isinstance(target, Path):
@@ -73,7 +78,7 @@ def root_directory(target: Union[Path, BinaryIO], exclude: List[str] = None) -> 
     return root
 
 
-def dict_contains(superset, subset):
+def dict_contains(superset: Dict[Any, Any], subset: Dict[Any, Any]) -> bool:
     """
     partial comparison dictionaries
 
@@ -95,11 +100,11 @@ def dict_contains(superset, subset):
     return True
 
 
-def slide(iterable, size=2):
+def slide(iterable: Iterable[Any], size=2) -> Iterable[Any]:
     return itertools.zip_longest(*[itertools.islice(iterable, i, sys.maxsize) for i in range(size)])
 
 
-def expand_dot(pattern: Dict[str, Any]):
+def expand_dot(pattern: Dict[str, Any]) -> Dict[str, Any]:
     """
     {'a.b.c': 1} => {'a':{'b':{'c': 1}}}
     """

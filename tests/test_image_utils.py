@@ -1,11 +1,11 @@
 import pytest
-from fan_tools.python import py_rel_path
+from fan_tools.python import rel_path
 from fan_tools.image_utils import Transpose
 
 
 @pytest.fixture
 def png_content():
-    with py_rel_path('./image.png').open('rb') as f:
+    with rel_path('./image.png').open('rb') as f:
         yield f.read()
 
 
