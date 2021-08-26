@@ -34,15 +34,19 @@ def pytest_configure(config):
     with suppress(Exception):
         print('Stop old container if exists')
         os.system('docker stop testpostgres')
+        os.system('docker stop testredis')
         time.sleep(1)
     with suppress(Exception):
         os.system('docker rm testpostgres')
+        os.system('docker rm testredis')
     try:
         print('Start docker')
         succ('docker run -d -p 40001:5432  -e POSTGRES_PASSWORD=password '
              '--name=testpostgres postgres:13')
+        succ('docker run -d -p 40002:6379 --name=testredis redis:6.2.4')
         time.sleep(5)
         wait_socket('localhost', 40001, timeout=15)
+        wait_socket('localhost', 40002, timeout=15)
         create_database()
     except Exception as e:
         print('EXCEPTION: {}'.format(e))
@@ -53,7 +57,9 @@ def pytest_unconfigure(config):
     if config.getoption('docker_skip') or config.getoption('keep_db'):
         return
     os.system('docker stop -t 2 testpostgres')
+    os.system('docker stop -t 2 testredis')
     os.system('docker rm testpostgres')
+    os.system('docker rm testredis')
 
 
 @pytest.fixture(autouse=True)
