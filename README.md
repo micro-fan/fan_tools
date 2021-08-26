@@ -1,6 +1,7 @@
 # About this package
 
-[![Build Status](https://travis-ci.org/micro-fan/fan_tools.svg?branch=master)](https://travis-ci.org/micro-fan/fan_tools)
+
+[![Build Status](https://img.shields.io/github/workflow/status/micro-fan/fan_tools/CI)](https://github.com/micro-fan/fan_tools/actions)
 [![PyPi version](https://img.shields.io/pypi/v/fan_tools.svg)](https://pypi.python.org/pypi/fan_tools)
 
 
