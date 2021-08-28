@@ -37,6 +37,7 @@ setup(
         'gitlab_monitoring': ['python-gitlab==1.0.2', SANIC],
         'image_utils': ['Pillow'],
         'otel': ['opentelemetry-instrumentation-django', 'opentelemetry-instrumentation-psycopg2'],
+        'jaeger': ['opentelemetry-exporter-jaeger-thrift'],
     },
     tests_require=['pytest==3.1.3'],
     entry_points={
