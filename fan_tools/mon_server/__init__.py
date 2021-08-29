@@ -52,6 +52,7 @@ class MetricsServer:
         self.app.on_event('startup')(self.run_tasks)
 
     async def run_tasks(self):
+        print(f'RUN TASKS: {self.tasks}')
         for task in self.tasks:
             loop_func = task['func']
             coro = loop_func(self.gen_update_func(), *task['args'], **task['kwargs'])

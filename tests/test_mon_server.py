@@ -1,9 +1,12 @@
 from unittest.mock import patch
 
-import aiohttp
 import pytest
+from asgi_lifespan import LifespanManager
+from fastapi import FastAPI
+from httpx import AsyncClient
 
 from fan_tools.mon_server import MetricsServer
+
 
 pytestmark = pytest.mark.asyncio
 
@@ -14,10 +17,8 @@ def server_port(unused_tcp_port_factory):
 
 
 @pytest.fixture
-def sanic_app():
-    from sanic import Sanic
-
-    yield Sanic()
+async def fastapi_app():
+    yield FastAPI()
 
 
 class MetricHook:
@@ -37,8 +38,8 @@ def mhook():
 
 
 @pytest.fixture
-def mserver(sanic_app, mhook):
-    server = MetricsServer(sanic_app, 'running')
+def mserver(fastapi_app, mhook):
+    server = MetricsServer(fastapi_app, 'running')
     server.add_task(mhook.remember_update)
     yield server
 
@@ -50,22 +51,19 @@ def patch_loop(event_loop):
 
 
 @pytest.fixture
-async def running_server(sanic_app, mserver, server_port, patch_loop, event_loop):
-    running_server = sanic_app.create_server(
-        host='localhost', port=server_port, return_asyncio_server=True
-    )
-    yield await running_server
-    running_server.close()
+async def running_server(fastapi_app, mserver, server_port, patch_loop, event_loop):
+    async with LifespanManager(fastapi_app):
+        yield fastapi_app
 
 
 @pytest.fixture
 async def get_metrics(running_server, server_port):
-    async with aiohttp.ClientSession() as cli:
-
+    async with AsyncClient(app=running_server) as cli:
+        # with TestClient(running_server) as cli:
         async def async_get():
             resp = await cli.get(f'http://localhost:{server_port}/metrics')
-            assert resp.status == 200
-            return await resp.text()
+            assert resp.status_code == 200
+            return resp.text
 
         yield async_get
 

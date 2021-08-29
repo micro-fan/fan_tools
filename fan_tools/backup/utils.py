@@ -9,6 +9,7 @@ import os
 
 from fan_tools.mon_server import MetricsServer
 
+
 log = logging.getLogger('fan_tools.backup.utils')
 
 
@@ -62,8 +63,9 @@ def parse_args(environ_defaults={}):
     return parser.parse_args()
 
 
-def run_main(backup_server, environ_defaults={}):
-    args = parse_args(environ_defaults)
+def run_main(backup_server, environ_defaults={}, args=None):
+    if not args:
+        args = parse_args(environ_defaults)
     backup_server = get_backup_server(args, backup_server)
     if args.daemonize:
         from sanic import Sanic
