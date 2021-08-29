@@ -27,7 +27,7 @@ def update_gitlab_runners(gitlab_api):
 
 async def update_gitlab_loop(update_metrics, params):
     """
-    app = Sanic()
+    app = FastAPI()
     mserver = MetricsServer(app)
     mserver.add_task(update_gitlab_loop, params={'url': GITLAB_URL, 'token': token})
     """

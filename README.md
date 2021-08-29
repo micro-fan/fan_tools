@@ -192,18 +192,17 @@ log.error('test error')
 
 ## fan_tools.mon_server.MetricsServer
 
-Sanic based server that servers metrics in prometheus format.
+FastAPI based server that servers metrics in prometheus format.
 
 ```
-from sanic import Sanic
+import uvicorn
 
-from fan_tools.mon_server import MetricsServer
 from fan_tools.mon_server.certs import update_certs_loop
 
-app = Sanic()
-mserver = MetricsServer(app, status_metric='running{server="localhost"}')
-mserver.add_task(update_certs_loop, hosts=['gettipsi.com', 'proofnetwork.io'])
-app.run(host='0.0.0.0', port=8000)
+app = FastAPI()
+mserver = MetricsServer(app)
+mserver.add_task(update_certs_loop, hosts=['perfectlabel.io', 'robopickles.com'])
+uvicorn.run(app, host='0.0.0.0', port=os.environ.get('MONITORING_PORT', 8000))
 ```
 
 
