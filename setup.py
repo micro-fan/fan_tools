@@ -1,5 +1,6 @@
 from setuptools import find_packages, setup
 
+
 with open('fan_tools/__init__.py', 'r') as f:
     for line in f:
         if line.startswith('__version__'):
@@ -8,8 +9,6 @@ with open('fan_tools/__init__.py', 'r') as f:
 
 with open('README.md', 'r', encoding='utf-8') as f:
     readme = f.read()
-
-SANIC = 'sanic'
 
 setup(
     name='fan_tools',
@@ -31,10 +30,10 @@ setup(
         ],
         'logging': ['safe-logger>=1.2.1', 'python-json-logger==0.1.7'],
         'aio_utils': ['aiopg', 'psycopg2-binary'],
-        'monitoring': [SANIC, 'starlette'],
+        'monitoring': ['starlette'],
         's3_backup': ['boto3'],
         'gcloud_backup': ['google-cloud-storage'],
-        'gitlab_monitoring': ['python-gitlab==1.0.2', SANIC],
+        'gitlab_monitoring': ['python-gitlab==1.0.2'],
         'image_utils': ['Pillow'],
         'otel': ['opentelemetry-instrumentation-django', 'opentelemetry-instrumentation-psycopg2'],
         'jaeger': ['opentelemetry-exporter-jaeger-thrift'],

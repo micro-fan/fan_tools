@@ -2,14 +2,18 @@
 """
 Export items in prometheus format.
 """
+import asyncio
 import logging
 import os
 from collections import ChainMap
 from functools import partial
 
-from sanic import Sanic, response
+from fastapi import APIRouter, FastAPI
+from fastapi.responses import PlainTextResponse
+
 
 log = logging.getLogger('fan_monitoring')
+router = APIRouter()
 
 
 class MetricsServer:
@@ -17,11 +21,14 @@ class MetricsServer:
     You you should add monitoring functions with add_task
     Your update function will receive update_metrics function with all additional args
     """
-    def __init__(self, app, status_metric='running{example_var="default_env"}'):
+
+    def __init__(self, app: FastAPI, status_metric='running{example_var="default_env"}'):
         self.app = app
-        self.app.add_route(self.expose_metrics, '/metrics')
+        self.app.get('/metrics', response_class=PlainTextResponse)(self.expose_metrics)
         self.metrics = f'{status_metric} 1'
         self.all_names = [{status_metric: 1}]
+        self.tasks = []
+        self.running_tasks = []
 
     def update_metrics(self, names, metrics):
         for name in names:
@@ -41,18 +48,32 @@ class MetricsServer:
         return partial(self.update_metrics, local_names)
 
     def add_task(self, loop_func, *args, **kwargs):
-        self.app.add_task(loop_func(self.gen_update_func(), *args, **kwargs))
+        self.tasks.append({'func': loop_func, 'args': args, 'kwargs': kwargs})
+        self.app.on_event('startup')(self.run_tasks)
 
-    async def expose_metrics(self, request):
-        return response.text(self.metrics)
+    async def run_tasks(self):
+        for task in self.tasks:
+            loop_func = task['func']
+            coro = loop_func(self.gen_update_func(), *task['args'], **task['kwargs'])
+            self.running_tasks.append(asyncio.create_task(coro))
+
+    async def finish_tasks(self):
+        for task in self.runing_tasks:
+            await task.cancel()
+
+    async def expose_metrics(self):
+        return self.metrics
 
 
 def main():
+    import uvicorn
+
     from fan_tools.mon_server.certs import update_certs_loop
-    app = Sanic()
+
+    app = FastAPI()
     mserver = MetricsServer(app)
-    mserver.add_task(update_certs_loop, hosts=['gettipsi.com', 'proofnetwork.io'])
-    app.run(host='0.0.0.0', port=os.environ.get('MONITORING_PORT'))
+    mserver.add_task(update_certs_loop, hosts=['perfectlabel.io', 'robopickles.com'])
+    uvicorn.run(app, host='0.0.0.0', port=os.environ.get('MONITORING_PORT', 8000))
 
 
 if __name__ == '__main__':
