@@ -63,16 +63,22 @@ def parse_args(environ_defaults={}):
     return parser.parse_args()
 
 
+def get_app(args, backup_server):
+    from fastapi import FastAPI
+
+    app = FastAPI(on_startup=[backup_server.run_monitoring])
+    MetricsServer(app, args.monitoring_group)
+    return app
+
+
 def run_main(backup_server, environ_defaults={}, args=None):
     if not args:
         args = parse_args(environ_defaults)
     backup_server = get_backup_server(args, backup_server)
     if args.daemonize:
-        from sanic import Sanic
+        import uvicorn
 
-        app = Sanic()
-        mserver = MetricsServer(app, args.monitoring_group)
-        mserver.add_task(backup_server.run_monitoring)
-        app.run(host='0.0.0.0', port=os.environ.get('MONITORING_PORT', 80))
+        app = get_app(args, backup_server)
+        uvicorn.run(app, host='0.0.0.0', port=os.environ.get('MONITORING_PORT', 80))
     else:
         asyncio.run(backup_server.perform_backup(skip_upload=args.skip_upload))
