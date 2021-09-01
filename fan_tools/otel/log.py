@@ -52,7 +52,7 @@ def enable_otel_logger(
     }
 
     with suppress(ValueError):
-        setup_logger(log_file_name, **params)
+        setup_logger(log_file, **params)
 
     for level, names in log_levels.items():
         for name in names:
