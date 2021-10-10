@@ -1,6 +1,7 @@
 import pytest
+
 from fan_tools.django.fields import ChoicesEnum
-from fan_tools.python import usd_round, dict_contains, slide, expand_dot
+from fan_tools.python import dict_contains, expand_dot, slide, usd_round
 
 
 @pytest.fixture(scope='class')

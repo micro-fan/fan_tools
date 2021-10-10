@@ -1,0 +1,64 @@
+[sources.unix_syslog]
+  type = "syslog"
+  address = "0.0.0.0:9998"
+  mode = "udp"
+
+
+[transforms.json_split_syslog]
+  type = "remap" # required
+  inputs = ["unix_syslog"] # required
+  source = '''
+  .message = slice!(.message, 4, -1)
+  '''
+  drop_on_abort = true
+  drop_on_error = true
+
+[transforms.parsed_json_logs]
+  type = "remap" # required
+  inputs = ["json_*"] # required
+  source = '''
+  parsed = parse_json!(.message)
+  ., err = merge(., parsed)
+  '''
+  drop_on_abort = true
+  drop_on_error = true
+
+
+[transforms.logs_filter_metrics]
+  type = "filter"
+  inputs = ["parsed_json_logs"]
+  condition = '.name == "fan.metric"'
+
+
+[transforms.logs_to_metrics]
+  type = "log_to_metric"
+  inputs = ["logs_filter_metrics"]
+
+  [[transforms.logs_to_metrics.metrics]]
+    field = "increment"
+    name = "{{message}}"
+    increment_by_value = true
+    type = "counter"
+    [transforms.logs_to_metrics.metrics.tags]
+    tags = "{{tags}}"
+
+
+[transforms.logs_export_metrics]
+  type = 'remap'
+  inputs = ['logs_to_metrics']
+  source = '''
+  .tags = parse_json!(.tags.tags)
+  del(.tags.tags)
+  '''
+
+[sinks.datadog_metrics]
+  type = "datadog_metrics"
+  inputs = ["logs_export_metrics"]
+  api_key = "${DD_KEY}"
+  region = "us"
+
+
+[sinks.console]
+  type = "console"
+  inputs = ["logs_export_metrics"] #, "common_output"
+  encoding.codec = "json"

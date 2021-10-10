@@ -626,3 +626,17 @@ class UploadImageView(views.GenericAPIView):
         s = ImageSerializer(instance=obj)
         return Response(s.data)
 ```
+
+
+### fan_tools.metrics
+
+Helper to send metrics. [Example for datadog](examples/send_dd_metric.py)
+
+Usually you want to setup some kind of notification for metric with name `error_metric`. It is sent by `send_error_metric`.
+
+
+For DataDog your metric query will look like:
+
+```
+sum:error_metric{service:prod*} by {error_type,service}.as_count()
+```

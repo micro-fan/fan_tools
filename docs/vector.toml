@@ -1,0 +1,156 @@
+[sources.docker_logs]
+  type = "docker_logs"
+  include_containers = [
+    "${COMPOSE_NAME}_redis_1",
+    "${COMPOSE_NAME}_rabbitmq_1",
+    "${COMPOSE_NAME}_otlp_1",
+    "${COMPOSE_NAME}_db_1",
+    "${COMPOSE_NAME}_gateway_1",
+  ]
+
+# [sources.json_logs]
+#   type = "file" # required
+#   ignore_older_secs = 600 # optional, no default, seconds
+#   include = ["/srv/logs/wanna_web_logs/cms.json_log"] # required
+#   read_from = "beginning" # optional, default
+
+
+[sources.unix_syslog]
+  type = "syslog"
+  address = "0.0.0.0:9998"
+  mode = "udp"
+
+[sources.udp_uwsgi]
+  type = "socket"
+  address = "0.0.0.0:9997"
+  mode = "udp"
+
+#[sources.plain_logs]
+#  type = "file" # required
+#  ignore_older_secs = 600 # optional, no default, seconds
+#  include = ["/srv/logs/wanna_web_logs/uwsgi.log"] # required
+#  read_from = "beginning" # optional, default
+
+[transforms.json_split_syslog]
+  type = "remap" # required
+  inputs = ["unix_syslog"] # required
+  source = '''
+  .message = slice!(.message, 4, -1)
+  '''
+  drop_on_abort = true
+  drop_on_error = true
+
+
+[transforms.parsed_json_logs]
+  type = "remap" # required
+  inputs = ["json_*"] # required
+  source = '''
+  parsed = parse_json!(.message)
+  ., err = merge(., parsed)
+  '''
+  drop_on_abort = true
+  drop_on_error = true
+
+
+[transforms.logs_filter_metrics]
+  type = "filter"
+  inputs = ["parsed_json_logs"]
+  condition = '.name == "fan.metric"'
+
+
+[transforms.logs_to_metrics]
+  type = "log_to_metric"
+  inputs = ["logs_filter_metrics"]
+
+  [[transforms.logs_to_metrics.metrics]]
+    field = "increment"
+    name = "{{message}}"
+    increment_by_value = true
+    type = "counter"
+    [transforms.logs_to_metrics.metrics.tags]
+    tags = "{{tags}}"
+
+
+[transforms.logs_export_metrics]
+  type = 'remap'
+  inputs = ['logs_to_metrics']
+  source = '''
+  .tags = parse_json!(.tags.tags)
+  del(.tags.tags)
+  '''
+
+[transforms.uwsgi_parsed]
+  inputs = ["udp_uwsgi"]
+  type = "remap"
+  source = '''
+  .service = "uwsgi.general"
+  if starts_with(.message, "[pid:") {
+    .original = .message
+    parsed = parse_grok!(.message, "\\[pid: %{NUMBER:pid}\\|app: %{NUMBER:app}\\|req: %{NUMBER:req_num1}/%{NUMBER:req_num2}\\] %{IP:client_ip} \\(\\) \\{%{NUMBER:vars} vars in %{NUMBER:vbytes} bytes\\} %{SYSLOG5424SD:timestamp} %{WORD:method} %{URIPATH:path} => generated %{NUMBER:resp_bytes} bytes in %{NUMBER:duration} msecs \\(%{DATA} %{NUMBER:status_code}\\) %{NUMBER:resp_headers} headers in %{NUMBER:resp_headers_bytes} bytes \\(%{NUMBER:num_switches} switches on core %{NUMBER:core_num}\\)")
+    . = merge(., parsed)
+    .message, err = .method + " " + .path + " => [" + .status_code +"] " + .resp_bytes + " bytes"
+    .service = "uwsgi.request"
+  }
+
+  '''
+  drop_on_abort = false
+
+
+[transforms.docker_mapped_logs]
+  inputs = ["docker_logs"]
+  type = "remap"
+  source = '''
+  .svc = .label."com.docker.compose.service"
+  .service, err = "docker." + .label."com.docker.compose.service"
+  '''
+
+
+[transforms.docker_router]
+  type = "route"
+  inputs = ["docker_mapped_logs"]
+  route.gateway_raw = '.svc == "gateway"'
+  route.ready = 'includes(["redis", "rabbitmq", "otlp", "db"], .svc)'
+
+[transforms.parsed_nginx]
+  type = "remap"
+  inputs = ["docker_router.gateway_raw"]
+  source = '''
+  parsed, err = parse_nginx_log(.message, "combined")
+  if is_null(err) {
+    . = merge(., parsed)
+  }
+  '''
+
+
+[transforms.common_output]
+  type = "remap"
+  inputs = ["parsed_json_logs", "uwsgi_parsed", "docker_router.ready", "parsed_nginx"]
+  source = '''
+  .version = "${GITHUB_SHA}"
+  .env = "${ENV}"
+  '''
+
+[sinks.datadog_logs]
+  # General
+  type = "datadog_logs" # required
+  inputs = ["common_output"]
+  compression = "gzip"
+  default_api_key = "${DD_KEY}"
+
+  encoding.codec = "json"
+  # Healthcheck
+  healthcheck.enabled = true # optional, default
+
+[sinks.datadog_metrics]
+  type = "datadog_metrics"
+  inputs = ["logs_export_metrics"] # required
+  api_key = "${DD_KEY}"
+  region = "us"
+
+  # Healthcheck
+  healthcheck.enabled = true # optional, default
+
+[sinks.console]
+  type = "console"
+  inputs = ["logs_export_metrics"] #, "common_output"
+  encoding.codec = "json"
