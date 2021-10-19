@@ -120,3 +120,33 @@ def expand_dot(pattern: Dict[str, Any]) -> Dict[str, Any]:
         else:
             out[k] = v
     return out
+
+
+_initial_missing = object()
+
+
+async def areduce(function, sequence, initial=_initial_missing):
+    """
+    asynchronous implementation of the reduce function
+    based on: `functools.reduce`
+
+    Example:
+    async def asum_two(a, b):
+        return a + b
+
+    await areduce(asum_two, [1, 2, 3, 4, 5])
+    """
+    it = iter(sequence)
+
+    if initial is _initial_missing:
+        try:
+            value = next(it)
+        except StopIteration:
+            raise TypeError('areduce() of empty sequence with no initial value') from None
+    else:
+        value = initial
+
+    for element in it:
+        value = await function(value, element)
+
+    return value

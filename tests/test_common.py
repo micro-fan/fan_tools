@@ -1,7 +1,7 @@
 import pytest
 
 from fan_tools.django.fields import ChoicesEnum
-from fan_tools.python import dict_contains, expand_dot, slide, usd_round
+from fan_tools.python import areduce, dict_contains, expand_dot, slide, usd_round
 
 
 @pytest.fixture(scope='class')
@@ -61,3 +61,12 @@ def test_05_expand_dot():
 
 def test_06_slide():
     assert list(slide(range(3))) == [(0, 1), (1, 2), (2, None)]
+
+
+@pytest.mark.asyncio
+async def test_07_async_reduce():
+    async def sum_two(a, b):
+        return a + b
+
+    assert await areduce(sum_two, [1, 2, 3, 4, 5]) == 15
+    assert await areduce(sum_two, [1, 2, 3, 4, 5], initial=100) == 115
