@@ -5,7 +5,7 @@ import warnings
 import zipfile
 from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
-from typing import Any, BinaryIO, Dict, Iterable, List, Optional, Union
+from typing import Any, BinaryIO, Dict, Iterable, List, Optional, Sequence, Union
 
 
 def execfile(fname: Union[str, Path], _globals: Dict[str, Any], _locals: Dict[str, Any]):
@@ -150,3 +150,9 @@ async def areduce(function, sequence, initial=_initial_missing):
         value = await function(value, element)
 
     return value
+
+
+def chunks(lst: Sequence, n: int):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]

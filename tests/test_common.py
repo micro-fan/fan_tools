@@ -1,7 +1,7 @@
 import pytest
 
 from fan_tools.django.fields import ChoicesEnum
-from fan_tools.python import areduce, dict_contains, expand_dot, slide, usd_round
+from fan_tools.python import areduce, dict_contains, expand_dot, slide, usd_round, chunks
 
 
 @pytest.fixture(scope='class')
@@ -70,3 +70,24 @@ async def test_07_async_reduce():
 
     assert await areduce(sum_two, [1, 2, 3, 4, 5]) == 15
     assert await areduce(sum_two, [1, 2, 3, 4, 5], initial=100) == 115
+
+
+def test_08_chunks():
+    cases = [
+        # test common case
+        (list(range(0, 4)), 2, [[0, 1], [2, 3]]),
+        # test common case for another n
+        (list(range(0, 9)), 3, [[0, 1, 2], [3, 4, 5], [6, 7, 8]]),
+        # some cases
+        (list(range(0, 10)), 3, [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]),
+        (list(range(0, 11)), 3, [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10]]),
+        # test empty list
+        ([], 3, []),
+        # test length of list < n
+        ([1], 3, [[1]]),
+        # test tuple
+        ((1, 2, 3, 4, 5, 6), 3, [(1, 2, 3), (4, 5, 6)]),
+    ]
+
+    for to_chunks, n, result in cases:
+        assert list(chunks(to_chunks, n)) == result
