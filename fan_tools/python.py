@@ -1,3 +1,5 @@
+import asyncio
+import functools
 import itertools
 import os
 import sys
@@ -156,3 +158,41 @@ def chunks(lst: Sequence, n: int):
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
+
+
+def retry(exceptions=Exception, tries=-1):
+    """
+    Executes a function and retries it if it failed.
+
+    :param exceptions: an exception or a tuple of exceptions to catch. default: Exception.
+    :param tries: the maximum number of attempts. default: -1 (infinite).
+    """
+    def decorator(func):
+        if asyncio.iscoroutinefunction(func):
+            @functools.wraps(func)
+            async def wrapper(*args, **kwargs):
+                nonlocal tries
+                f = functools.partial(func, *args, **kwargs)
+                while tries:
+                    try:
+                        return await f(*args)
+                    except exceptions:
+                        tries -= 1
+                        if not tries:
+                            raise
+                return func(*args, **kwargs)
+        else:
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                nonlocal tries
+                f = functools.partial(func, *args, **kwargs)
+                while tries:
+                    try:
+                        return f(*args)
+                    except exceptions:
+                        tries -= 1
+                        if not tries:
+                            raise
+                return func(*args, **kwargs)
+        return wrapper
+    return decorator

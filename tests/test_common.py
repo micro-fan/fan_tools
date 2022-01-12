@@ -1,7 +1,7 @@
 import pytest
 
 from fan_tools.django.fields import ChoicesEnum
-from fan_tools.python import areduce, dict_contains, expand_dot, slide, usd_round, chunks
+from fan_tools.python import areduce, dict_contains, expand_dot, retry, slide, usd_round, chunks
 
 
 @pytest.fixture(scope='class')
@@ -91,3 +91,80 @@ def test_08_chunks():
 
     for to_chunks, n, result in cases:
         assert list(chunks(to_chunks, n)) == result
+
+
+def test_09_retry(capfd):
+    @retry(tries=3)
+    def func_to_retry():
+        print(1)
+        raise Exception
+
+    with pytest.raises(Exception):
+        func_to_retry()
+
+    out, err = capfd.readouterr()
+    assert out == '1\n1\n1\n'
+
+
+@pytest.mark.asyncio
+async def test_09_retry_async(capfd):
+    @retry(tries=3)
+    async def func_to_retry():
+        print(1)
+        raise Exception
+
+    with pytest.raises(Exception):
+        await func_to_retry()
+
+    out, err = capfd.readouterr()
+    assert out == '1\n1\n1\n'
+
+
+def test_10_retry(capfd):
+    @retry(ValueError, tries=3)
+    def func_to_retry():
+        print(1)
+        raise ValueError
+
+    with pytest.raises(ValueError):
+        func_to_retry()
+
+    out, err = capfd.readouterr()
+    assert out == '1\n1\n1\n'
+
+
+@pytest.mark.asyncio
+async def test_10_retry_async(capfd):
+    @retry(ValueError, tries=3)
+    async def func_to_retry():
+        print(1)
+        raise ValueError
+
+    with pytest.raises(ValueError):
+        await func_to_retry()
+
+    out, err = capfd.readouterr()
+    assert out == '1\n1\n1\n'
+
+
+def test_11_retry(capfd):
+    @retry(tries=3)
+    def func_to_retry():
+        print(1)
+
+    func_to_retry()
+
+    out, err = capfd.readouterr()
+    assert out == '1\n'
+
+
+@pytest.mark.asyncio
+async def test_11_retry_async(capfd):
+    @retry(tries=3)
+    async def func_to_retry():
+        print(1)
+
+    await func_to_retry()
+
+    out, err = capfd.readouterr()
+    assert out == '1\n'
