@@ -168,3 +168,53 @@ async def test_11_retry_async(capfd):
 
     out, err = capfd.readouterr()
     assert out == '1\n'
+
+
+def test_12_retry(capfd):
+    class A:
+        @retry(tries=3)
+        def func_to_retry(self):
+            print(1)
+
+    A().func_to_retry()
+
+    out, err = capfd.readouterr()
+    assert out == '1\n'
+
+
+@pytest.mark.asyncio
+async def test_12_retry_async(capfd):
+    class A:
+        @retry(tries=3)
+        async def func_to_retry(self):
+            print(1)
+
+    await A().func_to_retry()
+
+    out, err = capfd.readouterr()
+    assert out == '1\n'
+
+
+def test_13_retry(capfd):
+    class A:
+        @retry(tries=3)
+        def func_to_retry(self, a, b):
+            print(a, b)
+
+    A().func_to_retry('111', b='222')
+
+    out, err = capfd.readouterr()
+    assert out == '111 222\n'
+
+
+@pytest.mark.asyncio
+async def test_13_retry_async(capfd):
+    class A:
+        @retry(tries=3)
+        async def func_to_retry(self, a, b):
+            print(a, b)
+
+    await A().func_to_retry('111', b='222')
+
+    out, err = capfd.readouterr()
+    assert out == '111 222\n'

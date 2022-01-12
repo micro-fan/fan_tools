@@ -175,12 +175,11 @@ def retry(exceptions=Exception, tries=-1):
                 f = functools.partial(func, *args, **kwargs)
                 while tries:
                     try:
-                        return await f(*args)
+                        return await f()
                     except exceptions:
                         tries -= 1
                         if not tries:
                             raise
-                return func(*args, **kwargs)
         else:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
@@ -188,11 +187,10 @@ def retry(exceptions=Exception, tries=-1):
                 f = functools.partial(func, *args, **kwargs)
                 while tries:
                     try:
-                        return f(*args)
+                        return f()
                     except exceptions:
                         tries -= 1
                         if not tries:
                             raise
-                return func(*args, **kwargs)
         return wrapper
     return decorator
