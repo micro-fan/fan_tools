@@ -1,7 +1,8 @@
-from django.conf.urls import re_path, include
-
+from django.urls import include, re_path
 from rest_framework.routers import DefaultRouter
+
 from .views import ArticleViewSet, ReviewViewSet
+
 
 router = DefaultRouter()
 router.register('article', ArticleViewSet)
