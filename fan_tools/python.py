@@ -110,6 +110,19 @@ def slide(iterable: Iterable[Any], size=2) -> Iterable[Any]:
     return itertools.zip_longest(*[itertools.islice(iterable, i, sys.maxsize) for i in range(size)])
 
 
+def dot_get(path: str, dct: Dict[str, Any], default: Any = [], sep: str = '.'):
+    """
+    get nested data from dictionary
+
+    $ dot_get('a.b.c', {'a': {'b': {'c': [1]}}}) # => [1]
+    """
+    for key in path.split(sep):
+        if key not in dct or not isinstance(dct, dict):
+            return default
+        dct = dct[key]
+    return dct
+
+
 def expand_dot(pattern: Dict[str, Any]) -> Dict[str, Any]:
     """
     {'a.b.c': 1} => {'a':{'b':{'c': 1}}}
@@ -161,7 +174,7 @@ async def areduce(function, sequence, initial=_initial_missing):
 def chunks(lst: Sequence, n: int):
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
-        yield lst[i:i + n]
+        yield lst[i : i + n]
 
 
 def retry(exceptions=Exception, tries=-1, logger=default_logger):
@@ -172,8 +185,10 @@ def retry(exceptions=Exception, tries=-1, logger=default_logger):
     :param tries: the maximum number of attempts. default: -1 (infinite).
     :param logger: will record a call retry warning.
     """
+
     def decorator(func):
         if asyncio.iscoroutinefunction(func):
+
             @functools.wraps(func)
             async def wrapper(*args, **kwargs):
                 nonlocal tries
@@ -186,7 +201,9 @@ def retry(exceptions=Exception, tries=-1, logger=default_logger):
                         if not tries:
                             raise
                         logger.exception('%s, retrying...', e)
+
         else:
+
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 nonlocal tries
@@ -199,5 +216,7 @@ def retry(exceptions=Exception, tries=-1, logger=default_logger):
                         if not tries:
                             raise
                         logger.exception('%s, retrying...', e)
+
         return wrapper
+
     return decorator

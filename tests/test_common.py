@@ -1,7 +1,16 @@
 import pytest
 
 from fan_tools.django.fields import ChoicesEnum
-from fan_tools.python import areduce, dict_contains, expand_dot, retry, slide, usd_round, chunks
+from fan_tools.python import (
+    areduce,
+    chunks,
+    dict_contains,
+    dot_get,
+    expand_dot,
+    retry,
+    slide,
+    usd_round,
+)
 
 
 @pytest.fixture(scope='class')
@@ -218,3 +227,11 @@ async def test_13_retry_async(capfd):
 
     out, err = capfd.readouterr()
     assert out == '111 222\n'
+
+
+def test_14_dot_get():
+    d = {'a': {'b': {'c': [1]}}}
+    assert dot_get('a.b.c', d) == [1]
+    assert dot_get('a*b*c', d, sep='*') == [1]
+    assert dot_get('a*b*c*d', d, sep='*', default=[2]) == [2]
+    assert dot_get('a*b*d', d, sep='*', default=[123]) == [123]
