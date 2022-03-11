@@ -7,8 +7,10 @@ from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from fan_tools.otel import instrument_django, instrument_logging, instrument_psycopg2
 
 
-def setup_jaeger_tracer(env, service, host, port):
-    resource = Resource(attributes={'service.name': service, 'env': env, 'dd.service': service})
+def setup_jaeger_tracer(env, service, host, port, additional={}):
+    resource = Resource(
+        attributes={'service.name': service, 'env': env, 'dd.service': service, **additional}
+    )
     trace.set_tracer_provider(TracerProvider(resource=resource))
     trace.get_tracer_provider().get_tracer(__name__)
 
@@ -23,7 +25,7 @@ def setup_jaeger_tracer(env, service, host, port):
 INS_DJANGO = [instrument_django, instrument_logging, instrument_psycopg2]
 
 
-def enable_otel(env, service, host='otlp', port=6831, instrumentations=INS_DJANGO):
+def enable_otel(env, service, host='otlp', port=6831, instrumentations=INS_DJANGO, additional={}):
     for instrument in instrumentations:
         instrument()
-    setup_jaeger_tracer(env, service, host, port)
+    setup_jaeger_tracer(env, service, host, port, additional)
