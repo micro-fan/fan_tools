@@ -21,7 +21,7 @@ setup(
     author_email='cybergrind@gmail.com',
     url='http://github.com/micro-fan/fan_tools',
     keywords=['testing', 'asyncio'],
-    install_requires=['pyyaml>=3.12', 'python-json-logger>=0.1.5'],
+    install_requires=['pyyaml>=3.12'],
     extras_require={
         'doc_utils': [
             'rest_framework_dyn_serializer>=1.3.*',
@@ -31,8 +31,8 @@ setup(
         'logging': ['safe-logger>=1.2.1', 'python-json-logger==0.1.7'],
         'aio_utils': ['aiopg', 'psycopg2-binary'],
         'monitoring': ['starlette'],
-        's3_backup': ['boto3'],
-        'gcloud_backup': ['google-cloud-storage'],
+        's3_backup': ['boto3', 'fan_tools[logging]'],
+        'gcloud_backup': ['google-cloud-storage', 'fan_tools[logging]'],
         'gitlab_monitoring': ['python-gitlab==1.0.2'],
         'image_utils': ['Pillow'],
         'otel': ['opentelemetry-instrumentation-django', 'opentelemetry-instrumentation-psycopg2'],
