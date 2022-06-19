@@ -4,8 +4,6 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 
-from fan_tools.otel import instrument_django, instrument_logging, instrument_psycopg2
-
 
 def setup_jaeger_tracer(env, service, host, port, additional={}):
     resource = Resource(
@@ -22,10 +20,9 @@ def setup_jaeger_tracer(env, service, host, port, additional={}):
     trace.get_tracer_provider().add_span_processor(SimpleSpanProcessor(jaeger_exporter))
 
 
-INS_DJANGO = [instrument_django, instrument_logging, instrument_psycopg2]
-
-
-def enable_otel(env, service, host='otlp', port=6831, instrumentations=INS_DJANGO, additional={}):
+def enable_otel(
+    env, service, host='otlp', port=6831, instrumentations=[instrument_logging], additional={}
+):
     for instrument in instrumentations:
         instrument()
     setup_jaeger_tracer(env, service, host, port, additional)
