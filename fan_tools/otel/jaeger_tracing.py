@@ -4,6 +4,8 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 
+from fan_tools.otel import instrument_logging
+
 
 def setup_jaeger_tracer(env, service, host, port, additional={}):
     resource = Resource(
