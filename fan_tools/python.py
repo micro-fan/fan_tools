@@ -47,7 +47,7 @@ def auto_directory(path: Union[str, Path]) -> Path:
     py.path.local(full_path).ensure_dir()
     """
     if isinstance(path, str):
-        dir_path = rel_path(path)
+        dir_path = rel_path(path, depth=2)
     else:
         dir_path = path
     dir_path.mkdir(exist_ok=True, parents=True)
