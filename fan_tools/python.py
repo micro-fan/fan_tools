@@ -27,7 +27,7 @@ def execfile(fname: Union[str, Path], _globals: Dict[str, Any], _locals: Dict[st
         return False
 
 
-def rel_path(path: str, check=False, depth=1) -> Path:
+def rel_path(path: str, check: bool = False, depth: int = 1) -> Path:
     d = Path(sys._getframe(depth).f_code.co_filename).parent
     full = (d / path).resolve()
     if check and not full.exists():
@@ -50,7 +50,7 @@ def auto_directory(path: Union[str, Path]) -> Path:
         dir_path = rel_path(path)
     else:
         dir_path = path
-    dir_path.mkdir(exist_ok=True)
+    dir_path.mkdir(exist_ok=True, parents=True)
     return dir_path
 
 
