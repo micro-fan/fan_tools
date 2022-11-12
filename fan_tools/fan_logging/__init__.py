@@ -26,13 +26,19 @@ class JSFormatter(JsonFormatter):
         'threadName',
     ]
 
-    def __init__(self, *args, env_vars=[], **kwargs):
+    def __init__(self, *args, env_vars=[], get_context=None, **kwargs):
+        """
+        get_context = Func -> dict[str, AnyJsonEncodable]
+        """
         super(JSFormatter, self).__init__(*args, **kwargs)
         self.default_keys = {k: v for k, v in list(os.environ.items()) if k in env_vars}
         self._required_fields.extend(self.msg_keys)
+        self.get_context_function = get_context
 
     def process_log_record(self, rec):
         rec.update(self.default_keys)
+        if self.get_context_function:
+            rec.update(self.get_context_function())
         return rec
 
 
@@ -69,7 +75,7 @@ def setup_logger(
     enable_stdout=True,
     stdout_level='DEBUG',
     handlers={},
-    json_params={}
+    json_params={},
 ):
     """
     json_formatter:
