@@ -1,8 +1,70 @@
 [project]
 name = 'fan-tools'
+dynamic = ["version"]
+description = 'Various python stuff: testing, aio helpers, etc'
+readme = "README.rst"
+authors = [
+  { name = 'cybergrind', email = 'cybergind+pypi@gmail.com' }
+]
+keywords = ['testing', 'asyncio']
+dependencies = [
+  'pyyaml>=3.12'
+]
+classifiers = [
+  'Development Status :: 5 - Production/Stable',
+  'Intended Audience :: Developers',
+  'License :: OSI Approved :: MIT License',
+  'Operating System :: MacOS',
+  'Operating System :: MacOS :: MacOS X',
+  'Operating System :: POSIX',
+  'Operating System :: POSIX :: Linux',
+  'Operating System :: Unix',
+  'Programming Language :: Python',
+  'Programming Language :: Python :: 3.8',
+  'Programming Language :: Python :: 3.9',
+  'Programming Language :: Python :: Implementation',
+  'Programming Language :: Python :: Implementation :: CPython',
+  'Topic :: Software Development',
+  'Topic :: Software Development :: Libraries',
+  'Topic :: Utilities',
+]
+
+[project.urls]
+github = 'http://github.com/micro-fan/fan_tools'
+
+[project.optional-dependencies]
+doc_utils = [
+  'rest_framework_dyn_serializer>=1.3.*',
+  'docutils',
+  'djangorestframework==3.12.*',
+]
+logging = ['safe-logger>=1.2.1', 'python-json-logger==0.1.7']
+aio_utils = ['aiopg', 'psycopg2-binary']
+monitoring = ['starlette']
+s3_backup = ['boto3', 'fan_tools[logging]']
+gcloud_backup = ['google-cloud-storage', 'fan_tools[logging]']
+gitlab_monitoring = ['python-gitlab==1.0.2']
+image_utils = ['Pillow']
+otel = ['opentelemetry-instrumentation-django', 'opentelemetry-instrumentation-psycopg2']
+jaeger = ['opentelemetry-exporter-jaeger-thrift']
+
+[project.scripts]
+fan_env_yaml = 'fan_tools.scripts.fan_env_yaml:main'
+fan_ci_script = 'fan_tools.scripts.fan_ci_script:main'
+fan_wait = 'fan_tools.scripts.fan_tools_wait:main'
+run_filebeat = 'fan_tools.scripts.run_filebeat:main'
+doc_serializer = 'fan_tools.doc_utils.fan_sphinx.dyn:main'
+fan_s3_backup = 'fan_tools.backup.s3:main'
 
 [tool.hatch.version]
 path = "fan_tools/__init__.py"
+
+[build-system]
+requires = ['setuptools', 'wheel', 'hatchling']
+build-backend = 'hatchling.build'
+
+[tool.hatch.commands]
+prerelease = 'hatch build'
 
 
 [tool.black]
