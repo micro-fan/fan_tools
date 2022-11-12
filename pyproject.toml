@@ -2,7 +2,7 @@
 name = 'fan-tools'
 dynamic = ["version"]
 description = 'Various python stuff: testing, aio helpers, etc'
-readme = "README.rst"
+readme = "README.md"
 authors = [
   { name = 'cybergrind', email = 'cybergind+pypi@gmail.com' }
 ]
