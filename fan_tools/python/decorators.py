@@ -3,7 +3,13 @@ import asyncio
 import functools
 import logging
 from pathlib import Path
-from typing import Awaitable, Callable, ParamSpec, Protocol, Type, TypeVar, Union
+from typing import Awaitable, Callable, Protocol, Type, TypeVar, Union
+
+
+try:
+    from typing import ParamSpec
+except ImportError:
+    from typing_extensions import ParamSpec
 
 
 default_logger = logging.getLogger('fantools.python')
