@@ -66,6 +66,8 @@ build-backend = 'hatchling.build'
 [tool.hatch.commands]
 prerelease = 'hatch build'
 
+[tool.ruff]
+line-length = 100
 
 [tool.black]
 line-length = 100
@@ -101,4 +103,5 @@ known_first_party = ''
 known_own = ['pytest_tipsi_testing', 'pytest_tipsi_django', 'fan_tools']
 
 [tool.pyright]
-strict = ['fan_tools']
+# instead use comment in the file: # pyright: strict 
+# strict = ['fan_tools/python/decorators.py']

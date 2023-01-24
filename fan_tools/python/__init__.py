@@ -1,7 +1,4 @@
-import asyncio
-import functools
 import itertools
-import logging
 import os
 import sys
 import warnings
@@ -10,8 +7,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 from typing import Any, BinaryIO, Dict, Iterable, List, Optional, Sequence, Union
 
-
-default_logger = logging.getLogger(__name__)
+from .decorators import retry  # pyright: ignore # noqa: F401
 
 
 def execfile(fname: Union[str, Path], _globals: Dict[str, Any], _locals: Dict[str, Any]):
@@ -175,48 +171,3 @@ def chunks(lst: Sequence, n: int):
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
         yield lst[i : i + n]
-
-
-def retry(exceptions=Exception, tries=-1, logger=default_logger):
-    """
-    Executes a function and retries it if it failed.
-
-    :param exceptions: an exception or a tuple of exceptions to catch. default: Exception.
-    :param tries: the maximum number of attempts. default: -1 (infinite).
-    :param logger: will record a call retry warning.
-    """
-
-    def decorator(func):
-        if asyncio.iscoroutinefunction(func):
-
-            @functools.wraps(func)
-            async def wrapper(*args, **kwargs):
-                nonlocal tries
-                f = functools.partial(func, *args, **kwargs)
-                while tries:
-                    try:
-                        return await f()
-                    except exceptions as e:
-                        tries -= 1
-                        if not tries:
-                            raise
-                        logger.exception('%s, retrying...', e)
-
-        else:
-
-            @functools.wraps(func)
-            def wrapper(*args, **kwargs):
-                nonlocal tries
-                f = functools.partial(func, *args, **kwargs)
-                while tries:
-                    try:
-                        return f()
-                    except exceptions as e:
-                        tries -= 1
-                        if not tries:
-                            raise
-                        logger.exception('%s, retrying...', e)
-
-        return wrapper
-
-    return decorator
