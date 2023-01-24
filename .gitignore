@@ -94,3 +94,4 @@ ENV/
 *~
 
 .pytest_cache/
+/.envrc

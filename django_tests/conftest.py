@@ -1,4 +1,5 @@
 import os
+import tempfile
 import time
 from contextlib import suppress
 
@@ -12,8 +13,10 @@ def create_database():
     c = 0
     while c < 30:
         try:
-            succ('echo create database plugin | '
-                 'PGPASSWORD=password psql -h localhost -p 40001 -U postgres')
+            succ(
+                'echo create database plugin | '
+                'PGPASSWORD=password psql -h localhost -p 40001 -U postgres'
+            )
             return
         except ExecError as e:
             print(e)
@@ -39,8 +42,12 @@ def pytest_configure(config):
         os.system('docker rm testpostgres')
     try:
         print('Start docker')
-        succ('docker run -d -p 40001:5432  -e POSTGRES_PASSWORD=password '
-             '--name=testpostgres postgres:13')
+        tmp_dir = tempfile.mkdtemp()
+        succ(
+            'docker run -d -p 40001:5432  -e POSTGRES_PASSWORD=password '
+            f'-v {tmp_dir}:/var/lib/postgresql/data '
+            '--name=testpostgres postgres:15 '
+        )
         time.sleep(5)
         wait_socket('localhost', 40001, timeout=15)
         create_database()
@@ -63,7 +70,7 @@ def autodatabase(module_transaction):
 
 def pytest_addoption(parser):
     group = parser.getgroup('fan_group')
-    group.addoption('--docker-skip', action='store_true', default=False,
-                    help='skip docker initialization')
-    group.addoption('--keep-db', action='store_true', default=False,
-                    help='skip shutting down db')
+    group.addoption(
+        '--docker-skip', action='store_true', default=False, help='skip docker initialization'
+    )
+    group.addoption('--keep-db', action='store_true', default=False, help='skip shutting down db')
