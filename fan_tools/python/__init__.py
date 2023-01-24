@@ -7,7 +7,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 from typing import Any, BinaryIO, Dict, Iterable, List, Optional, Sequence, Union
 
-from .decorators import retry  # pyright: ignore # noqa: F401
+from .decorators import cache_async, retry  # pyright: ignore # noqa: F401
 
 
 def execfile(fname: Union[str, Path], _globals: Dict[str, Any], _locals: Dict[str, Any]):

@@ -2,7 +2,8 @@
 import asyncio
 import functools
 import logging
-from typing import Awaitable, Callable, ParamSpec, Type, TypeVar, Union
+from pathlib import Path
+from typing import Awaitable, Callable, ParamSpec, Protocol, Type, TypeVar, Union
 
 
 default_logger = logging.getLogger('fantools.python')
@@ -60,3 +61,47 @@ def retry(
         return wrapper
 
     return decorator
+
+
+class PydanticBaseModel(Protocol):
+    def parse_file(self, fname: Union[str, Path]) -> 'PydanticBaseModel':
+        ...
+
+    def json(self) -> str:
+        ...
+
+
+FuncType = Callable[P, Awaitable[PydanticBaseModel]]
+
+
+class cache_async:
+    """
+    file cache for async functions that returns pydantic models
+    NB: it doesn't use parameters to generate the cache file name
+    """
+
+    def __init__(self, fname: Path, model: PydanticBaseModel, default: PydanticBaseModel):
+        self.fname = fname
+        self._default = default
+        self.cache = default
+        # load from file
+        if self.fname.exists():
+            self.cache = model.parse_file(self.fname)
+
+    def __call__(self, func: FuncType[P]) -> FuncType[P]:
+        @functools.wraps(func)
+        async def wrapper(*args: P.args, **kwargs: P.kwargs) -> PydanticBaseModel:
+            if self.cache:
+                return self.cache
+            value = await func(*args, **kwargs)
+            self.cache = value
+            self.fname.write_text(self.cache.json())
+            return value
+
+        wrapper.reset_cache = self.reset_cache
+
+        return wrapper
+
+    def reset_cache(self):
+        self.cache = self._default
+        self.fname.unlink()
