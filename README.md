@@ -85,31 +85,6 @@ Here you just get and use `self.cursor`, but automatically you get connection an
 This is just simple example, complex tests can use more deep relations in tests. And this approach is way more easier and faster than complex `setUp` methods.
 
 
-### AIOTestCase
-
-**NOTE: we're highly suggest to use pytest alongside with existing async tests plugins**
-
-Base for asyncronous test cases, you can use it as drop-in replacement for pre-existent tests to be able:
-
-* write asyncronous test methods
-* write asyncronous `setUp` and `tearDown` methods
-* use asyncronous function in `assertRaises`
-
-```python
-class ExampleCase(AIOTestCase):
-    async setUp(self):
-        await async_setup()
-
-    async tearDown(self):
-        await async_teardown()
-
-    async division(self):
-        1/0
-
-    async test_example(self):
-        await self.assertRaises(ZeroDivisionError, self.async_division)
-```
-
 ## fan_tools.unix helpers
 
 Basic unix helpers
