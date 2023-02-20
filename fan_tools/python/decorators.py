@@ -3,7 +3,7 @@ import asyncio
 import functools
 import logging
 from pathlib import Path
-from typing import Awaitable, Callable, Protocol, Type, TypeVar, Union
+from typing import Awaitable, Callable, Generic, Protocol, Type, TypeVar, Union
 
 
 try:
@@ -77,16 +77,16 @@ class PydanticBaseModel(Protocol):
         ...
 
 
-FuncType = Callable[P, Awaitable[PydanticBaseModel]]
+ModelType = TypeVar('ModelType', bound=PydanticBaseModel)
 
 
-class cache_async:
+class cache_async(Generic[ModelType]):
     """
     file cache for async functions that returns pydantic models
     NB: it doesn't use parameters to generate the cache file name
     """
 
-    def __init__(self, fname: Path, model: PydanticBaseModel, default: PydanticBaseModel):
+    def __init__(self, fname: Path, model: ModelType, default: ModelType):
         self.fname = fname
         self._default = default
         self.cache = default
@@ -94,9 +94,9 @@ class cache_async:
         if self.fname.exists():
             self.cache = model.parse_file(self.fname)
 
-    def __call__(self, func: FuncType[P]) -> FuncType[P]:
+    def __call__(self, func: Callable[P, Awaitable[ModelType]]):
         @functools.wraps(func)
-        async def wrapper(*args: P.args, **kwargs: P.kwargs) -> PydanticBaseModel:
+        async def wrapper(*args: P.args, **kwargs: P.kwargs) -> ModelType:
             if self.cache:
                 return self.cache
             value = await func(*args, **kwargs)
@@ -104,7 +104,7 @@ class cache_async:
             self.fname.write_text(self.cache.json())
             return value
 
-        wrapper.reset_cache = self.reset_cache
+        wrapper.reset_cache = self.reset_cache  # type: ignore
 
         return wrapper
 

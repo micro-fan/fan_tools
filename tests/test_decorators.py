@@ -10,7 +10,7 @@ class TestCache:
 
         model.json.return_value = '{"a": "b"}'
 
-        @cache_async(fname, model, {})
+        @cache_async[type(dict)](fname, model, {})
         async def func():
             return model
 
