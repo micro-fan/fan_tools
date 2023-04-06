@@ -21,3 +21,16 @@ class TestCache:
 
         func.reset_cache()
         assert not fname.exists()
+
+    def test_02_unlink(self, tmp_path):
+        fname = tmp_path / 'cache.json'
+        model = MagicMock()
+
+        model.json.return_value = '{"a": "b"}'
+
+        @cache_async[type(dict)](fname, model, {})
+        async def func():
+            return model
+
+        assert not fname.exists()
+        func.reset_cache()

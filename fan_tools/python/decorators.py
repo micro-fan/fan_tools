@@ -110,4 +110,5 @@ class cache_async(Generic[ModelType]):
 
     def reset_cache(self):
         self.cache = self._default
-        self.fname.unlink()
+        if self.fname.exists():
+            self.fname.unlink()
