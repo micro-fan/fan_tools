@@ -615,3 +615,12 @@ For DataDog your metric query will look like:
 ```
 sum:error_metric{service:prod*} by {error_type,service}.as_count()
 ```
+
+
+# development
+
+```bash
+# keep docker container
+tox -e py311-django40 -- --keep-db django_tests
+tox -e py311-django40 -- --keep-db --docker-skip django_tests
+```
