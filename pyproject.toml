@@ -65,6 +65,9 @@ path = "fan_tools/__init__.py"
 requires = ['setuptools', 'wheel', 'hatchling']
 build-backend = 'hatchling.build'
 
+[tool.hatch.build]
+exclude = ['.*']
+
 [tool.hatch.commands]
 prerelease = 'hatch build'
 
