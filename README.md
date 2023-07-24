@@ -12,6 +12,31 @@ Some might work with other versions, but we're going to be free from all these c
 
 ## Testing helpers
 
+### Caching decorators
+
+
+```python
+# cache async function that returns pydantic.BaseModel
+from fan_tools.python import cache_async
+
+@cache_async[type(dict)](fname, model, {})
+async def func():
+    return model
+
+
+# cache sync function that returns json serializable response
+from fan_tools.python import memoize
+
+@memoize
+def func(*args, **kwargs):
+    return json.dumps(
+        {
+            'args': args,
+            'kwargs': kwargs,
+        }
+    )
+```
+
 ### ApiUrls
 
 Defined in `fan_tools/testing/__init__.py`. Required for defining nested urls with formatting.

@@ -1,9 +1,13 @@
 # pyright: strict
 import asyncio
 import functools
+import json
 import logging
+from hashlib import md5
+from inspect import isfunction
 from pathlib import Path
-from typing import Awaitable, Callable, Generic, Protocol, Type, TypeVar, Union
+from types import FunctionType
+from typing import Awaitable, Callable, cast, Dict, Generic, Protocol, Type, TypeVar, Union
 
 
 try:
@@ -112,3 +116,57 @@ class cache_async(Generic[ModelType]):
         self.cache = self._default
         if self.fname.exists():
             self.fname.unlink()
+
+
+In = ParamSpec('In')
+Out = TypeVar('Out')
+
+
+def memoize(fname: Union[FunctionType, str, Path, None] = None):
+    """
+    memoize function call to filename
+    input and outputs must be JSON serializable
+    """
+
+    call_func: Union[FunctionType, None] = None
+
+    if isfunction(fname):
+        call_func = fname
+        pth = Path('.cache/memoized.json')
+    elif not fname:
+        pth = Path('.cache/memoized.json')
+    else:
+        pth = cast(Path, fname)
+
+    pth.parent.mkdir(parents=True, exist_ok=True)
+
+    def reset_cache():
+        if pth.exists():
+            pth.unlink()
+
+    def _wrapped(func: Callable[In, Out]) -> Callable[In, Out]:
+        @functools.wraps(func)
+        def _inner(*args: In.args, **kwargs: In.kwargs) -> Out:
+            k = md5(json.dumps({'args': args, 'kwargs': kwargs}).encode('utf8'))
+
+            cached: Dict[str, Out] = {}
+            if pth.exists():
+                cached = json.loads(pth.read_text())
+
+            key = k.hexdigest()
+
+            if key in cached:
+                return cached[key]
+
+            res = func(*args, **kwargs)
+            cached[k.hexdigest()] = res
+            pth.write_text(json.dumps(cached))
+            return res
+
+        _inner.reset_cache = reset_cache
+        return _inner
+
+    if call_func:
+        return _wrapped(call_func)
+
+    return _wrapped
