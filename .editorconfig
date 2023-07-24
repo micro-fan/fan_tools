@@ -15,7 +15,7 @@ charset = utf-8
 indent_style = space
 indent_size = 4
 emacs_py_project = .
-emacs_py_env = .tox/cp310-django40
+emacs_py_env = .tox/py310-django40
 
 # Tab indentation (no size specified)
 [Makefile]

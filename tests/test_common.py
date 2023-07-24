@@ -235,3 +235,7 @@ def test_14_dot_get():
     assert dot_get('a*b*c', d, sep='*') == [1]
     assert dot_get('a*b*c*d', d, sep='*', default=[2]) == [2]
     assert dot_get('a*b*d', d, sep='*', default=[123]) == [123]
+
+    d1 = {'a': None}
+    assert dot_get('a.b', d1) == []
+    assert dot_get('a.b', d1, None) is None

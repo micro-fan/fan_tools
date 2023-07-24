@@ -113,7 +113,7 @@ def dot_get(path: str, dct: Dict[str, Any], default: Any = [], sep: str = '.'):
     $ dot_get('a.b.c', {'a': {'b': {'c': [1]}}}) # => [1]
     """
     for key in path.split(sep):
-        if key not in dct or not isinstance(dct, dict):
+        if not isinstance(dct, dict) or key not in dct:
             return default
         dct = dct[key]
     return dct
