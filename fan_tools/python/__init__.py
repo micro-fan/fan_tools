@@ -7,7 +7,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 from typing import Any, BinaryIO, Dict, Iterable, List, Optional, Sequence, Union
 
-from .decorators import cache_async, retry, memoize  # pyright: ignore # noqa: F401
+from .decorators import cache_async, memoize, retry  # pyright: ignore # noqa: F401
 
 
 def execfile(fname: Union[str, Path], _globals: Dict[str, Any], _locals: Dict[str, Any]):
@@ -106,7 +106,7 @@ def slide(iterable: Iterable[Any], size=2) -> Iterable[Any]:
     return itertools.zip_longest(*[itertools.islice(iterable, i, sys.maxsize) for i in range(size)])
 
 
-def dot_get(path: str, dct: Dict[str, Any], default: Any = [], sep: str = '.'):
+def dot_get(path: str, dct: Dict[str, Any], default: Any = None, sep: str = '.'):
     """
     get nested data from dictionary
 
